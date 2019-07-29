@@ -1,4 +1,5 @@
 import React from 'react';
+import './App.css';
 import { TabBar } from 'antd-mobile';
 import Shop from './pages/Shop';
 import Cart from './pages/Cart';

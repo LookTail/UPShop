@@ -80,14 +80,14 @@ class Order extends React.Component {
   };
 
   componentDidMount() {
-    Toast.loading("加载中", 0);
+    // Toast.loading("加载中", 0);
 	  setTimeout(() => {
       dataBlobs = dataBlobs.concat(data);
       this.setState({
         dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
         isLoading: false,
       });
-      Toast.hide();
+      // Toast.hide();
 	  }, 1000);
   }
 

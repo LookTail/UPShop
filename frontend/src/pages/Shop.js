@@ -4,7 +4,8 @@ import ShopListItem from '../components/ShopListItem';
 import Search from '../components/Search';
 import 'antd-mobile/dist/antd-mobile.css';
 import { GoodsData } from '../mockData.js';
-import E from '../global.js'
+import E from '../global.js';
+import axios from 'axios';
 
 let dataBlobs = [];
 
@@ -44,15 +45,33 @@ class Shop extends React.Component {
   };
 
   componentDidMount() {
-    // Toast.loading("加载中", 0);
-	  setTimeout(() => {
-      dataBlobs = dataBlobs.concat(this.requestGoodsData(this.state.page));
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
-        isLoading: false,
+    Toast.loading("加载中", 0);
+    
+    // this.requestGoodsData(this.state.page).then(v => {
+    //   this.setState({
+    //     dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
+    //     isLoading: false,
+    //   });
+    // });
+
+    setTimeout(()=> {
+      this.requestGoodsData(this.state.page).then(v => {
+        this.setState({
+          dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
+          isLoading: false,
+        });
       });
-      // Toast.hide();
-    }, 1000);
+      Toast.hide();
+    }, 5000)
+
+    // setTimeout(() => {
+    //   dataBlobs = dataBlobs.concat(this.requestGoodsData(this.state.page));
+    //   this.setState({
+    //     dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
+    //     isLoading: false,
+    //   });
+    //   // Toast.hide();
+	  // }, 1000);
   }
 
   onEndReached = (event) => {
@@ -60,18 +79,16 @@ class Shop extends React.Component {
     if (!this.state.hasMore) {
       return;
 	  }
-    console.log('reach end', this.state.page);
     this.setState({ isLoading: true });
-    let requested = this.requestGoodsData(this.state.page + 1);
-    if(requested.length < 8) this.setState({ hasMore: false });
-    dataBlobs = dataBlobs.concat(requested);
-    setTimeout(() => {
+    this.requestGoodsData(this.state.page + 1).then(v => {
       this.setState({
         dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
         isLoading: false,
-        page: this.state.page + 1,
       });
-    }, 1000);
+    });
+    // if(requested.length < 8) this.setState({ hasMore: false });
+    // dataBlobs = dataBlobs.concat(requested);
+    
   }
 
   dataUpdate = (newData) => {
@@ -91,14 +108,26 @@ class Shop extends React.Component {
         dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
         isLoading: false,
       });
-    }, 1000);
+    }, 10000);
   }
 
-  requestGoodsData = (page) => {
+  requestGoodsData = async (page) => {
     // TODO 分页请求商品列表
-    return GoodsData.slice(10*(page-1), 10*page);
+    let data;
+    await axios.get('http://localhost:8080/goods/'+page)
+      .then((response) => {
+        data = response.data;
+      }  
+    );
+    this.setState({ page: this.state.page + 1});
+    if(data.result.length < 10) this.setState({ hasMore: false });
+    dataBlobs = dataBlobs.concat(data.result);
   }
-
+  // requestGoodsData = (page) => {
+  //   // TODO 分页请求购物车列表
+  //   return GoodsData.slice(10*(page-1), 10*page);
+  //   // return []
+  // }
 
   render() {
 	  const separator = (sectionID, rowID) => {
