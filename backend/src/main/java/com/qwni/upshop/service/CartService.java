@@ -27,7 +27,7 @@ public class CartService {
         Cart cart = new Cart();
         int totalPrice = 0;
         for(CartItem item : list) {
-            totalPrice += Integer.parseInt(item.getPrice());
+            totalPrice += (Integer.parseInt(item.getPrice())* Integer.parseInt(item.getAmount()));
         }
         cart.setTotalPrice(String.valueOf(totalPrice));
         cart.setItemList(list);
@@ -47,6 +47,10 @@ public class CartService {
 
     public Boolean delete(String id) {
         return cartDao.delete(id);
+    }
+
+    public Boolean amount(String id, String amount) {
+        return cartDao.amount(id, amount);
     }
 
 }

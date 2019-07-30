@@ -41,8 +41,8 @@ export class ShopListItem extends Component {
           <img style={{ height: '64px', marginRight: '15px' }} src={this.props.item.img} alt="" />
           <div style={{ lineHeight: 1 }}>
             <div style={{ marginBottom: '8px', fontSize: '14px' }}>{this.props.item.des}</div>
-            <div style={{ marginBottom: '8px', fontSize: '11px', color: '#787878'}}>销量：101</div>
-            <span style={{ fontSize: '18px', color: '#FF6E27' }}>¥35</span>
+            <div style={{ marginBottom: '8px', fontSize: '11px', color: '#787878'}}>销量：{this.props.item.sales}</div>
+            <span style={{ fontSize: '18px', color: '#FF6E27' }}>¥{this.props.item.price}</span>
           </div>
           <div style={{ marginTop: 'auto', marginLeft: 'auto', marginRight: 2}}>
             <Button

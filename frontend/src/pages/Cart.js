@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { ListView, NavBar, Button, Toast } from 'antd-mobile';
+import { ListView, NavBar, Button } from 'antd-mobile';
 import CartListItem from '../components/CartListItem';
-import { GoodsData } from '../mockData.js';
 import E from '../global.js'
+import axios from 'axios'
 
 
 let dataBlobs = [];
@@ -11,11 +11,7 @@ export class Cart extends Component {
   constructor(props) {
     super(props);
     const dataSource = new ListView.DataSource({
-      rowHasChanged: (row1, row2) => {
-        // if(row1 !== row2) console.log("r1:" + row1 + "   r2:" + row2 + "   不相等");
-        // else console.log("r1:" + row1 + "   r2:" + row2 + "   相等");
-        return row1 !== row2;
-      },
+      rowHasChanged: (row1, row2) => { return row1 !== row2; }
     });
 
     this.state = {
@@ -23,65 +19,122 @@ export class Cart extends Component {
       isLoading: true,
       height: 591,
       selected: '',
-      page: 1,
+      totalPrice: 0,
     };
     E.listener.add("addCart", this.addCart);
     console.log("cart页面已加载");
   }
 
   componentDidMount() {
-    // Toast.loading("加载中", 0);
-	  setTimeout(() => {
-      dataBlobs = dataBlobs.concat(this.requestGoodsData(this.state.page));
+    this.setState({ isLoading: true });
+    this.requestCartData().then( data => {
+      dataBlobs = dataBlobs.concat(data.itemList);
       this.setState({
         dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
         isLoading: false,
+        totalPrice: data.totalPrice,
       });
-      // Toast.hide();
-	  }, 1000);
+    });
+      
   }
 
   onEndReached = (event) => {
-    if (this.state.isLoading && !this.state.hasMore) {
+    if (this.state.isLoading) {
       return;
 	  }
     console.log('reach end', event);
-    this.setState({ isLoading: true });
-    dataBlobs = dataBlobs.concat(this.requestGoodsData(this.state.page + 1));
-    setTimeout(() => {
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
-        isLoading: false,
-        page: this.state.page + 1,
-      });
-    }, 1000);
   }
 
-  deleteItem = (id) => {
+  deleteItem = (itemId) => {
     this.setState({ isLoading: true});
-    dataBlobs.splice(id, 1)
-    let dataBlobs2 = JSON.parse(JSON.stringify(dataBlobs));    
-    this.setState({
-      dataSource: this.state.dataSource.cloneWithRows(dataBlobs2),
-      isLoading: false,
+    this.deleteCartItem(itemId).then(s => {
+      if(s) {
+        this.requestCartData().then((data) => {
+          dataBlobs = data.itemList;
+          this.setState({
+            dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
+            isLoading: false,
+            totalPrice: data.totalPrice,
+          });
+        });
+      } else {
+        console.log("删除购物车失败！！！");
+      }
     });
   }
 
-  requestGoodsData = (page) => {
-    // TODO 分页请求购物车列表
-    // return GoodsData.slice(10*(page-1), 10*page);
-    return []
+  addCart = (itemId) => {
+    this.setState({ isLoading: true});    
+    this.insertCartItem(itemId).then(s => {
+      if(s) {
+        this.requestCartData().then((data) => {
+          dataBlobs = data.itemList;
+          this.setState({
+            dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
+            isLoading: false,
+            totalPrice: data.totalPrice,
+          });
+        });
+      } else {
+        console.log("插入购物车失败！！！");
+      }
+    });
   }
 
-  addCart = (itemId) => {
-    this.setState({ isLoading: true});
-    dataBlobs = dataBlobs.concat(GoodsData[itemId]);
-    setTimeout(() => {
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
-        isLoading: false,
+  insertCartItem = async (id) => {
+    let result;
+    await axios.get('http://localhost:8080/cart/insert/'+ id)
+      .then((response) => {
+        if(response.data.code === "0") result = true; 
+        else result = false;
+      });   
+    return result;
+  }
+
+  deleteCartItem = async (id) => {
+    let result;
+    console.log("delete called" + id);
+    await axios.get('http://localhost:8080/cart/delete/'+ id)
+      .then((response) => {
+        if(response.data.code === "0") result = true; 
+        else result = false;
       });
-    }, 1000);
+    return result;
+  }
+
+  requestCartData = async () => {
+    // TODO 请求商品列表
+    let data;
+    await axios.get('http://localhost:8080/cart/get')
+      .then((response) => {
+        data = response.data;
+      }); 
+    return data.result;
+  }
+
+  stepperChange = (val, id) => {
+    this.requestAmount(val, id).then((r) => {
+      if(r) {
+        this.requestCartData().then((data) => {
+          dataBlobs = data.itemList;
+          this.setState({
+            dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
+            totalPrice: data.totalPrice,
+          });
+        });
+      }
+    });
+  }
+
+  requestAmount = async (val, id) => {
+    let result;
+    await axios.get('http://localhost:8080/cart/amount/'+id+'/'+val)
+      .then((response) => {
+        if(response.data.code === "0") result = true; 
+        else result = false;
+      });
+    return result;
+
   }
 
   render() {
@@ -113,7 +166,7 @@ export class Cart extends Component {
               {this.state.isLoading ? 'Loading...' : 'Loaded'}
             </div>)
           }
-          renderRow={(rowData, sectionId, rowId) => (<CartListItem item={rowData} rowId={rowId} deleteItem = {this.deleteItem.bind(this)} />)}
+          renderRow={(item) => (<CartListItem item={item} deleteItem={this.deleteItem.bind(this)} stepperChange={this.stepperChange.bind(this)}/>)}
           renderSeparator={separator}
           style={{
             height: this.state.height,
@@ -126,7 +179,7 @@ export class Cart extends Component {
           onEndReachedThreshold={500}
         />
         <div style={{ display: 'flex', padding: '10px 0', height: '50px', backgroundColor: '#808080' }}>
-          <span style={{ fontSize: '14px', color: '#FFFFFF', lineHeight: '30px', marginLeft: '15px' }}>总金额：￥ 122</span>
+          <span style={{ fontSize: '14px', color: '#FFFFFF', lineHeight: '30px', marginLeft: '15px' }}>总金额：￥{this.state.totalPrice}</span>
           <div style={{ marginLeft: 'auto', marginRight: '15px'}}>
             <Button
               size = "small"

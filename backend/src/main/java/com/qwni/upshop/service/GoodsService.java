@@ -24,8 +24,8 @@ public class GoodsService {
         return goodsDao.getGoodsByPage(page);
     }
 
-    public List<Goods> getGoodsByKey(String key, int page) {
-        return goodsDao.getGoodsByKey(key, page);
+    public List<Goods> getGoodsByKey(String key) {
+        return goodsDao.getGoodsByKey(key);
     }
 
 }

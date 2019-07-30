@@ -39,12 +39,12 @@ public class UpshopController {
         return resp;
     }
 
-    @RequestMapping(value = "goods/{key}/{page}", method = RequestMethod.GET)
-    public BaseResp getGoodsByKey(@PathVariable String key, @PathVariable int page) {
+    @RequestMapping(value = "goods/search/{key}", method = RequestMethod.GET)
+    public BaseResp getGoodsByKey(@PathVariable String key) {
         BaseResp resp = new BaseResp();
         resp.setCode(RespCodeEnum.SUCCESS.getCode());
         resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
-        resp.setResult(goodsService.getGoodsByKey(key, page));
+        resp.setResult(goodsService.getGoodsByKey(key));
         return resp;
     }
 
@@ -82,7 +82,20 @@ public class UpshopController {
             resp.setMsg(RespCodeEnum.FAIL.getMsg());
         }
         return resp;
+    }
 
+    @RequestMapping(value = "cart/amount/{id}/{amount}", method = RequestMethod.GET)
+    public BaseResp amount(@PathVariable String id, @PathVariable String amount) {
+        BaseResp resp = new BaseResp();
+        if(cartService.amount(id, amount)) {
+            resp.setCode(RespCodeEnum.SUCCESS.getCode());
+            resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
+        } else {
+            resp.setCode((RespCodeEnum.FAIL.getCode()));
+            resp.setMsg(RespCodeEnum.FAIL.getMsg());
+        }
+
+        return resp;
     }
 
 

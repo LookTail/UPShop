@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListView, NavBar, Toast } from 'antd-mobile';
+import { ListView, NavBar } from 'antd-mobile';
 import OrderListItem from '../components/OrderListItem';
 import 'antd-mobile/dist/antd-mobile.css';
 

@@ -31,11 +31,10 @@ public class GoodsDao {
         return list;
     }
 
-    public List<Goods> getGoodsByKey(String key, int page) {
+    public List<Goods> getGoodsByKey(String key) {
         Pattern pattern = Pattern.compile("^.*"+key+".*$");
         Query query = new Query();
         query.addCriteria(Criteria.where("title").regex(pattern));
-        query.skip((page - 1) * 10).limit(10);
         List<Goods> list = mongoTemplate.find(query, Goods.class, "goods");
         return list;
     }

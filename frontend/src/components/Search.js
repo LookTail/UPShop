@@ -1,16 +1,6 @@
 import React, { Component } from 'react'
 import { SearchBar } from 'antd-mobile'
 
-
-const data = [
-  {
-	  img: 'https://zos.alipayobjects.com/rmsportal/dKbkpPXKfvZzWCM.png',
-	  title: 'Meet hotel',
-	  des: '不是所有的兼职汪都需要风吹日晒',
-  },
-];
-
-
 export class Search extends Component {
   constructor(props) {
     super(props)
@@ -25,9 +15,9 @@ export class Search extends Component {
       console.log("change");
   }
 
-  onSubmit = (value) => {
-    console.log("submit" + value);
-    this.props.dataUpdate(data);
+  onSubmit = (key) => {
+    console.log("submit" + key);
+    this.props.dataUpdate(key);
   }
 
   onClear = (value) => {
