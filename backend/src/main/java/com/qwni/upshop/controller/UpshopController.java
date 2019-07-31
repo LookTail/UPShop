@@ -5,6 +5,7 @@ import com.qwni.upshop.common.entity.Goods;
 import com.qwni.upshop.common.response.BaseResp;
 import com.qwni.upshop.service.CartService;
 import com.qwni.upshop.service.GoodsService;
+import com.qwni.upshop.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,11 +21,13 @@ public class UpshopController {
 
     private GoodsService goodsService;
     private CartService cartService;
+    private OrderService orderService;
 
     @Autowired
-    public UpshopController(GoodsService goodsService, CartService cartService) {
+    public UpshopController(GoodsService goodsService, CartService cartService, OrderService orderService) {
         this.goodsService = goodsService;
         this.cartService = cartService;
+        this.orderService = orderService;
     }
 
     @RequestMapping(value = "goods/{page}", method = RequestMethod.GET)
@@ -49,7 +52,7 @@ public class UpshopController {
     }
 
     @RequestMapping(value = "cart/get", method = RequestMethod.GET)
-    public BaseResp getCard() {
+    public BaseResp getCart() {
         BaseResp resp = new BaseResp();
         resp.setCode(RespCodeEnum.SUCCESS.getCode());
         resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
@@ -68,7 +71,6 @@ public class UpshopController {
             resp.setMsg(RespCodeEnum.FAIL.getMsg());
         }
         return resp;
-
     }
 
     @RequestMapping(value = "cart/delete/{id}", method = RequestMethod.GET)
@@ -94,7 +96,41 @@ public class UpshopController {
             resp.setCode((RespCodeEnum.FAIL.getCode()));
             resp.setMsg(RespCodeEnum.FAIL.getMsg());
         }
+        return resp;
+    }
 
+    @RequestMapping(value = "order/get", method = RequestMethod.GET)
+    public BaseResp getOrder() {
+        BaseResp resp = new BaseResp();
+        resp.setCode(RespCodeEnum.SUCCESS.getCode());
+        resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
+        resp.setResult(orderService.getOrderAll());
+        return resp;
+    }
+
+    @RequestMapping(value = "order/generate", method = RequestMethod.GET)
+    public BaseResp insertOrder() {
+        BaseResp resp = new BaseResp();
+        if(orderService.generateOrder()) {
+            resp.setCode(RespCodeEnum.SUCCESS.getCode());
+            resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
+        } else {
+            resp.setCode((RespCodeEnum.FAIL.getCode()));
+            resp.setMsg(RespCodeEnum.FAIL.getMsg());
+        }
+        return resp;
+    }
+
+    @RequestMapping(value = "order/delete", method = RequestMethod.GET)
+    public BaseResp deleteOrder() {
+        BaseResp resp = new BaseResp();
+        if(orderService.deleteOrder()) {
+            resp.setCode(RespCodeEnum.SUCCESS.getCode());
+            resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
+        } else {
+            resp.setCode((RespCodeEnum.FAIL.getCode()));
+            resp.setMsg(RespCodeEnum.FAIL.getMsg());
+        }
         return resp;
     }
 

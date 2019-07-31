@@ -5,7 +5,6 @@ import E from '../global';
 export class CartListItem extends Component {
   constructor(props) {
     super(props);
-    console.log(this.props.item)
     this.state = {
       amount: this.props.item.amount,
       item : this.props.item,

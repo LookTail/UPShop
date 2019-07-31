@@ -27,7 +27,7 @@ public class CartService {
         Cart cart = new Cart();
         int totalPrice = 0;
         for(CartItem item : list) {
-            totalPrice += (Integer.parseInt(item.getPrice())* Integer.parseInt(item.getAmount()));
+            totalPrice += Integer.parseInt(item.getPrice())* Integer.parseInt(item.getAmount());
         }
         cart.setTotalPrice(String.valueOf(totalPrice));
         cart.setItemList(list);

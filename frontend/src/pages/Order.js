@@ -2,49 +2,7 @@ import React from 'react';
 import { ListView, NavBar } from 'antd-mobile';
 import OrderListItem from '../components/OrderListItem';
 import 'antd-mobile/dist/antd-mobile.css';
-
-const data = [
-  {
-	  img: 'https://zos.alipayobjects.com/rmsportal/dKbkpPXKfvZzWCM.png',
-	  title: 'Meet hotel',
-	  des: '不是所有的兼职汪都需要风吹日晒不是所有的兼职汪都需要风吹日晒',
-  },
-  {
-	  img: 'https://zos.alipayobjects.com/rmsportal/XmwCzSeJiqpkuMB.png',
-		title: 'McDonald\'s invites you',
-		des: '不是所有的兼职汪都需要风吹日晒',
-  },
-  {
-		img: 'https://zos.alipayobjects.com/rmsportal/hfVtzEhPzTUewPm.png',
-		title: 'Eat the week',
-		des: '不是所有的兼职汪都需要风吹日晒',
-  },
-  {
-		img: 'https://zos.alipayobjects.com/rmsportal/hfVtzEhPzTUewPm.png',
-		title: 'Eat the week',
-		des: '不是所有的兼职汪都需要风吹日晒',
-  },
-  {
-		img: 'https://zos.alipayobjects.com/rmsportal/hfVtzEhPzTUewPm.png',
-		title: 'Eat the week',
-		des: '不是所有的兼职汪都需要风吹日晒',
-  },
-  {
-		img: 'https://zos.alipayobjects.com/rmsportal/hfVtzEhPzTUewPm.png',
-		title: 'Eat the week',
-		des: '不是所有的兼职汪都需要风吹日晒',
-  },
-  {
-		img: 'https://zos.alipayobjects.com/rmsportal/hfVtzEhPzTUewPm.png',
-		title: 'Eat the week',
-		des: '不是所有的兼职汪都需要风吹日晒',
-  },
-  {
-		img: 'https://zos.alipayobjects.com/rmsportal/hfVtzEhPzTUewPm.png',
-		title: 'Eat the week',
-		des: '不是所有的兼职汪都需要风吹日晒',
-  },
-];
+import axios from 'axios';
 
 let dataBlobs = [];
 
@@ -59,71 +17,34 @@ class Order extends React.Component {
       dataSource,
       isLoading: true,
       height: 641,
-      visible: false,
-      selected: '',
     };
 
-    console.log("order页面已加载");
+    console.log("order页面已加载");  
+  }
+
+  componentDidMount() {
+    this.requestOrderData().then( data => {
+      dataBlobs = data.result;
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
+        isLoading: false,
+      });
+    });
     
   }
 
-  onSelect = (opt) => {
-    this.setState({
-      visible: false,
-      selected: opt.props.value,
-    });
-  };
-  handleVisibleChange = (visible) => {
-    this.setState({
-      visible,
-    });
-  };
-
-  componentDidMount() {
-    // Toast.loading("加载中", 0);
-	  setTimeout(() => {
-      dataBlobs = dataBlobs.concat(data);
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
-        isLoading: false,
+  requestOrderData = async () => {
+    let data;
+    await axios.get('http://localhost:8080/order/get')
+      .then((response) => {
+        data = response.data;
       });
-      // Toast.hide();
-	  }, 1000);
+    return data;
   }
+
 
   onEndReached = (event) => {
-    if (this.state.isLoading && !this.state.hasMore) {
-      return;
-	  }
     console.log('reach end', event);
-    this.setState({ isLoading: true });
-    dataBlobs = dataBlobs.concat(data);
-    setTimeout(() => {
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
-        isLoading: false,
-      });
-    }, 1000);
-  }
-
-  dataUpdate = (newData) => {
-    this.setState({ isLoading: true});
-    setTimeout(() => {
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(newData),
-        isLoading: false,
-      });
-    }, 1000);
-  }
-
-  cancelSearch = () => {
-    this.setState({ isLoading: true});
-    setTimeout(() => {
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
-        isLoading: false,
-      });
-    }, 1000);
   }
 
   render() {

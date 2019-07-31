@@ -122,6 +122,8 @@ export class Cart extends Component {
             totalPrice: data.totalPrice,
           });
         });
+      } else {
+        console.log("步进器改数量错误！！！");
       }
     });
   }
