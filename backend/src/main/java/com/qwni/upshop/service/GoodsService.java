@@ -28,4 +28,8 @@ public class GoodsService {
         return goodsDao.getGoodsByKey(key);
     }
 
+    public Boolean testOrder() {
+        return true;
+    }
+
 }

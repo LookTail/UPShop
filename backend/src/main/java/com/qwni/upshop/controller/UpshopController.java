@@ -7,6 +7,7 @@ import com.qwni.upshop.service.CartService;
 import com.qwni.upshop.service.GoodsService;
 import com.qwni.upshop.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -16,9 +17,6 @@ import java.util.List;
 @RequestMapping("/")
 @CrossOrigin("*")
 public class UpshopController {
-//    @Autowired
-//    private KafkaTemplate kafkaTemplate;
-
     private GoodsService goodsService;
     private CartService cartService;
     private OrderService orderService;
@@ -32,9 +30,6 @@ public class UpshopController {
 
     @RequestMapping(value = "goods/{page}", method = RequestMethod.GET)
     public BaseResp getGoodsByPage(@PathVariable int page) {
-//        KafkaProducer kafka = new KafkaProducer(kafkaTemplate);
-//        kafka.send("成功了哈哈哈");
-
         BaseResp resp = new BaseResp();
         resp.setCode(RespCodeEnum.SUCCESS.getCode());
         resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
@@ -134,6 +129,18 @@ public class UpshopController {
         return resp;
     }
 
+    @RequestMapping(value = "order/test/{id}", method = RequestMethod.GET)
+    public BaseResp testOrder(@PathVariable String id) {
+        BaseResp resp = new BaseResp();
+        if(orderService.testOrder(id)) {
+            resp.setCode(RespCodeEnum.SUCCESS.getCode());
+            resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
+        } else {
+            resp.setCode((RespCodeEnum.FAIL.getCode()));
+            resp.setMsg(RespCodeEnum.FAIL.getMsg());
+        }
+        return resp;
+    }
 
 
 }

@@ -8,17 +8,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class KafkaProducer {
 
-//    private final KafkaTemplate kafkaTemplate;
-//
-//    @Autowired
-//    public KafkaProducer(KafkaTemplate kafkaTemplate) {
-//        this.kafkaTemplate = kafkaTemplate;
-//    }
-//
-//    public String send(String msg) {
-//        kafkaTemplate.send("test", msg);
-//        return "success";
-//    }
+    private final KafkaTemplate kafkaTemplate;
+
+    @Autowired
+    public KafkaProducer(KafkaTemplate kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
+
+    public String send(String msg) {
+        kafkaTemplate.send("order", msg);
+        return "success";
+    }
 
 
 }
