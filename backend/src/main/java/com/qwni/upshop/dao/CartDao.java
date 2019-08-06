@@ -44,4 +44,10 @@ public class CartDao {
         return updateResult.wasAcknowledged();
     }
 
+    public Boolean deleteAll() {
+        Query query= new Query(new Criteria());
+        DeleteResult deleteResult = mongoTemplate.remove(query, "cart");
+        return deleteResult.wasAcknowledged();
+    }
+
 }

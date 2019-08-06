@@ -19,18 +19,18 @@ public class OrderService {
     private CartDao cartDao;
     private KafkaProducer kafkaProducer;
 
-    @Autowired
-    public OrderService(OrderDao orderDao, CartDao cartDao, KafkaProducer kafkaProducer) {
-        this.orderDao = orderDao;
-        this.cartDao = cartDao;
-        this.kafkaProducer = kafkaProducer;
-    }
-
 //    @Autowired
-//    public OrderService(OrderDao orderDao, CartDao cartDao) {
+//    public OrderService(OrderDao orderDao, CartDao cartDao, KafkaProducer kafkaProducer) {
 //        this.orderDao = orderDao;
 //        this.cartDao = cartDao;
+//        this.kafkaProducer = kafkaProducer;
 //    }
+
+    @Autowired
+    public OrderService(OrderDao orderDao, CartDao cartDao) {
+        this.orderDao = orderDao;
+        this.cartDao = cartDao;
+    }
 
     public List<Order> getOrderAll() {
         return orderDao.getOrderAll();
@@ -53,6 +53,8 @@ public class OrderService {
         order.setOrderId(OrderIdGenerator.createID());
         order.setItemList(orderList);
         order.setTotalPrice(String.valueOf(totalPrice));
+
+        cartDao.deleteAll();
         return orderDao.insertOrder(order);
     }
 

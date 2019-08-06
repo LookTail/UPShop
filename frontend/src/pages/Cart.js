@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ListView, NavBar, Button } from 'antd-mobile';
+import { ListView, NavBar, Button, Toast } from 'antd-mobile';
 import CartListItem from '../components/CartListItem';
 import E from '../global.js'
 import axios from 'axios'
@@ -139,6 +139,34 @@ export class Cart extends Component {
 
   }
 
+  onClick = () => {
+    Toast.loading("下单中，请稍后~", 0);
+    let result;
+    setTimeout(async () => {
+      await axios.get('http://localhost:8080/order/generate')
+      .then((response) => {
+        if(response.data.code === "0") {
+          Toast.success("下单成功~", 2, ()=>{ window.document.location.reload() });
+          result = true; 
+        } else {
+          Toast.fail("下单失败~", 2);
+          result = false;
+        }
+      });
+    }, 3000);
+    // await axios.get('http://localhost:8080/order/generate')
+    //   .then((response) => {
+    //     if(response.data.code === "0") {
+    //       Toast.success("下单成功~", 2);
+    //       result = true; 
+    //     } else {
+    //       Toast.fail("下单失败~", 2);
+    //       result = false;
+    //     }
+    //   });
+    return result;
+  }
+
   render() {
 	  const separator = (sectionID, rowID) => {
       return (
@@ -164,8 +192,8 @@ export class Cart extends Component {
           ref={el => this.lv = el}
           dataSource={this.state.dataSource}
           renderFooter={() => (
-            <div style={{ padding: 30, textAlign: 'center' }}>
-              {this.state.isLoading ? 'Loading...' : 'Loaded'}
+            <div style={{ padding: '5px 30px', textAlign: 'center' }}>
+              {this.state.isLoading ? 'Loading...' : '------------- 我是底线 -------------'}
             </div>)
           }
           renderRow={(item) => (<CartListItem item={item} deleteItem={this.deleteItem.bind(this)} stepperChange={this.stepperChange.bind(this)}/>)}
@@ -187,6 +215,7 @@ export class Cart extends Component {
               size = "small"
               type = "primary"
               style={{backgroundColor: '#00CC00'}}
+              onClick={this.onClick}
             >下单</Button> 
           </div>
         </div>

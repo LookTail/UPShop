@@ -4,6 +4,7 @@ import ShopListItem from '../components/ShopListItem';
 import Search from '../components/Search';
 import 'antd-mobile/dist/antd-mobile.css';
 import axios from 'axios';
+// import E from '../global.js';
 
 let dataBlobs = [];
 
@@ -27,6 +28,7 @@ class Shop extends React.Component {
       page: 1,
       hasMore: true,
     };
+
     console.log("shop页面已加载");
   }
 
@@ -54,6 +56,23 @@ class Shop extends React.Component {
     });
   }
 
+  // refresh = () => {
+  //   // dataBlobs = [];
+  //   console.log("shop refresh called");
+  //   this.setState({
+  //     page: 1,
+  //     hasMore: true,
+  //   });
+  //   this.requestGoodsData(this.state.page).then(data => {
+  //     // dataBlobs = dataBlobs.concat(data.result);
+  //     dataBlobs = data.result;
+  //     this.setState({
+  //       dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
+  //       isLoading: false,
+  //     });
+  //   });
+  // }
+
   onEndReached = (event) => {
     console.log('reach end', this.state.page);
     if (!this.state.hasMore) {
@@ -78,7 +97,6 @@ class Shop extends React.Component {
         dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
         isLoading: false,
       });
-      Toast.hide();
     });
   }
 

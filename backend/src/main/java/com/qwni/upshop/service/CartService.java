@@ -53,4 +53,6 @@ public class CartService {
         return cartDao.amount(id, amount);
     }
 
+    public Boolean deleteAll() { return cartDao.deleteAll(); }
+
 }
