@@ -55,8 +55,8 @@ public class UpshopController {
         return resp;
     }
 
-    @RequestMapping(value = "cart/insert/{id}", method = RequestMethod.GET)
-    public BaseResp insertCart(@PathVariable String id) {
+    @RequestMapping(value = "cart/insert", method = RequestMethod.POST)
+    public BaseResp insertCart(@RequestParam(value = "id") String id) {
         BaseResp resp = new BaseResp();
         if(cartService.insert(id)) {
             resp.setCode(RespCodeEnum.SUCCESS.getCode());
@@ -68,8 +68,8 @@ public class UpshopController {
         return resp;
     }
 
-    @RequestMapping(value = "cart/delete/{id}", method = RequestMethod.GET)
-    public BaseResp deleteCart(@PathVariable String id) {
+    @RequestMapping(value = "cart/delete", method = RequestMethod.POST)
+    public BaseResp deleteCart(@RequestParam(value = "id") String id) {
         BaseResp resp = new BaseResp();
         if(cartService.delete(id)) {
             resp.setCode(RespCodeEnum.SUCCESS.getCode());
@@ -81,8 +81,8 @@ public class UpshopController {
         return resp;
     }
 
-    @RequestMapping(value = "cart/amount/{id}/{amount}", method = RequestMethod.GET)
-    public BaseResp amount(@PathVariable String id, @PathVariable String amount) {
+    @RequestMapping(value = "cart/amount", method = RequestMethod.POST)
+    public BaseResp amount(@RequestParam(value = "id") String id, @RequestParam(value = "amount") String amount) {
         BaseResp resp = new BaseResp();
         if(cartService.amount(id, amount)) {
             resp.setCode(RespCodeEnum.SUCCESS.getCode());
@@ -103,7 +103,7 @@ public class UpshopController {
         return resp;
     }
 
-    @RequestMapping(value = "order/generate", method = RequestMethod.GET)
+    @RequestMapping(value = "order/generate", method = RequestMethod.POST)
     public BaseResp insertOrder() {
         BaseResp resp = new BaseResp();
         if(orderService.generateOrder()) {

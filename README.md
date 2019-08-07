@@ -61,9 +61,9 @@
 附录
 ----
 
-### 接口示例 ###
+### 接口信息 ###
 
-#### 商品信息分页查询接口 ####
+#### 接口示例：商品信息分页查询 ####
 
 **URL：** /goods/{page}  
 **返回格式：** json
@@ -74,8 +74,27 @@
 | - | - | - |
 | page | int | 分页查询的页号，从1开始 |
 **返回参数说明**
-| 名称    | 类型   | 说明     |
-| -      | -      | -       |
-| code   | string | 应答码   |
-| msg    | string | 应答信息 |
-| result | object | 结果集   |
+| 名称    | 类型   | 说明         |
+| -      | -      | -           |
+| code   | string | 应答码       |
+| msg    | string | 应答信息     |
+| result | object | 结果集       |
+| id     | string | 商品id       |
+| title  | string | 商品标题     |
+| des    | string | 商品描述     |
+| img    | string | 商品图片地址  |
+| sales  | string | 商品销量     |
+| price  | string | 商品价格     |
+
+#### 接口合集 ####
+
+| URL | HTTP | 说明 |
+| - | - | - |
+| /goods/{page} | GET | 商品信息分页查询 |
+| /goods/search/{key} | GET | 商品信息关键字查询 |
+| /cart/get | GET | 获取购物车数据 |
+| /cart/insert | POST | 向购物车插入商品 |
+| /cart/delete | POST | 删除购物车中商品 |
+| /cart/amount | POST | 修改购物车中商品数量 |
+| /order/get | GET | 查询订单 |
+| /order/generate | GET | 下单 |

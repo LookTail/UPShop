@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { ListView, NavBar, Button, Toast } from 'antd-mobile';
 import CartListItem from '../components/CartListItem';
-import E from '../global.js'
-import axios from 'axios'
+import E from '../global.js';
+import axios from 'axios';
+import qs from 'qs';
 
 
 let dataBlobs = [];
@@ -83,7 +84,7 @@ export class Cart extends Component {
 
   insertCartItem = async (id) => {
     let result;
-    await axios.get('http://localhost:8080/cart/insert/'+ id)
+    await axios.post('http://localhost:8080/cart/insert', qs.stringify({"id": id}))
       .then((response) => {
         if(response.data.code === "0") result = true; 
         else result = false;
@@ -94,7 +95,7 @@ export class Cart extends Component {
   deleteCartItem = async (id) => {
     let result;
     console.log("delete called" + id);
-    await axios.get('http://localhost:8080/cart/delete/'+ id)
+    await axios.post('http://localhost:8080/cart/delete', qs.stringify({id: id}))
       .then((response) => {
         if(response.data.code === "0") result = true; 
         else result = false;
@@ -130,7 +131,7 @@ export class Cart extends Component {
 
   requestAmount = async (val, id) => {
     let result;
-    await axios.get('http://localhost:8080/cart/amount/'+id+'/'+val)
+    await axios.post('http://localhost:8080/cart/amount', qs.stringify({id: id, amount: val}))
       .then((response) => {
         if(response.data.code === "0") result = true; 
         else result = false;
@@ -143,7 +144,7 @@ export class Cart extends Component {
     Toast.loading("下单中，请稍后~", 0);
     let result;
     setTimeout(async () => {
-      await axios.get('http://localhost:8080/order/generate')
+      await axios.post('http://localhost:8080/order/generate')
       .then((response) => {
         if(response.data.code === "0") {
           Toast.success("下单成功~", 2, ()=>{ window.document.location.reload() });
