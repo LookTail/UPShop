@@ -26,17 +26,11 @@ public class OrderService {
         this.kafkaProducer = kafkaProducer;
     }
 
-//    @Autowired
-//    public OrderService(OrderDao orderDao, CartDao cartDao) {
-//        this.orderDao = orderDao;
-//        this.cartDao = cartDao;
-//    }
-
     public List<Order> getOrderAll() {
         return orderDao.getOrderAll();
     }
 
-    public Boolean generateOrder() {
+    public String generateOrder() {
         List<CartItem> cartList = cartDao.getCart();
         List<OrderItem> orderList = new ArrayList<OrderItem>();
         int totalPrice = 0;
@@ -50,15 +44,22 @@ public class OrderService {
             totalPrice += Integer.parseInt(cartItem.getPrice())* Integer.parseInt(cartItem.getAmount());
         }
         Order order = new Order();
-        order.setOrderId(OrderIdGenerator.createID());
+        String id = OrderIdGenerator.createID();
+        order.setOrderId(id);
         order.setItemList(orderList);
         order.setTotalPrice(String.valueOf(totalPrice));
 
-        cartDao.deleteAll();
-        return orderDao.insertOrder(order);
+//        cartDao.deleteAll();
+
+        if (orderDao.insertOrder(order)) {
+            return id;
+        } else {
+            return "";
+        }
     }
 
-    public Boolean testOrder(String id) {
+    public Boolean testOrder() {
+        String id = OrderIdGenerator.createID();
         kafkaProducer.send(id);
         return true;
     }

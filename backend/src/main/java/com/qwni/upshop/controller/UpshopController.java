@@ -106,9 +106,11 @@ public class UpshopController {
     @RequestMapping(value = "order/generate", method = RequestMethod.POST)
     public BaseResp insertOrder() {
         BaseResp resp = new BaseResp();
-        if(orderService.generateOrder()) {
+        String id = orderService.generateOrder();
+        if(!id.isEmpty()) {
             resp.setCode(RespCodeEnum.SUCCESS.getCode());
             resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
+            resp.setResult(id);
         } else {
             resp.setCode((RespCodeEnum.FAIL.getCode()));
             resp.setMsg(RespCodeEnum.FAIL.getMsg());
@@ -129,10 +131,10 @@ public class UpshopController {
         return resp;
     }
 
-    @RequestMapping(value = "order/test/{id}", method = RequestMethod.GET)
-    public BaseResp testOrder(@PathVariable String id) {
+    @RequestMapping(value = "order/test", method = RequestMethod.GET)
+    public BaseResp testOrder() {
         BaseResp resp = new BaseResp();
-        if(orderService.testOrder(id)) {
+        if(orderService.testOrder()) {
             resp.setCode(RespCodeEnum.SUCCESS.getCode());
             resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
         } else {

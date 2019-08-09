@@ -9,6 +9,7 @@ import java.util.List;
 public class Order {
     private String orderId;
     private String totalPrice;
+    private String status = "0"; // 0-未支付  1-已支付  默认0
     private List<OrderItem> itemList;
 
     public String getOrderId() {
@@ -35,4 +36,7 @@ public class Order {
         this.itemList = itemList;
     }
 
+    public String getStatus() { return status; }
+
+    public void setStatus(String status) { this.status = status; }
 }
