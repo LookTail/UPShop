@@ -18,12 +18,14 @@ public class OrderService {
     private OrderDao orderDao;
     private CartDao cartDao;
     private KafkaProducer kafkaProducer;
+    private ScheduledTask scheduledTask;
 
     @Autowired
-    public OrderService(OrderDao orderDao, CartDao cartDao, KafkaProducer kafkaProducer) {
+    public OrderService(OrderDao orderDao, CartDao cartDao, KafkaProducer kafkaProducer, ScheduledTask scheduledTask) {
         this.orderDao = orderDao;
         this.cartDao = cartDao;
         this.kafkaProducer = kafkaProducer;
+        this.scheduledTask = scheduledTask;
     }
 
     public List<Order> getOrderAll() {
@@ -49,8 +51,7 @@ public class OrderService {
         order.setItemList(orderList);
         order.setTotalPrice(String.valueOf(totalPrice));
 
-//        cartDao.deleteAll();
-
+        cartDao.deleteAll();
         if (orderDao.insertOrder(order)) {
             return id;
         } else {
@@ -66,6 +67,20 @@ public class OrderService {
 
     public Boolean deleteOrder() {
         return orderDao.deleteOrder();
+    }
+
+    public Boolean paymentNotify(String orderId) {
+        if(orderDao.hasOrder(orderId)) {
+            if(orderDao.changePaymentStatus(orderId)) {
+                return true;
+            } else {
+                System.out.println("数据库更新订单支付状态失败");
+                return false;
+            }
+        } else {
+            scheduledTask.add(orderId);
+            return true;
+        }
     }
 
 }

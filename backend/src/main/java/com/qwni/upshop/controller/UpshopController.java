@@ -144,5 +144,18 @@ public class UpshopController {
         return resp;
     }
 
+    @RequestMapping(value = "order/notify", method = RequestMethod.POST)
+    public BaseResp notify(@RequestParam (value="orderId") String orderId) {
+        BaseResp resp = new BaseResp();
+        if(orderService.paymentNotify(orderId)) {
+            resp.setCode(RespCodeEnum.SUCCESS.getCode());
+            resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
+        } else {
+            resp.setCode((RespCodeEnum.FAIL.getCode()));
+            resp.setMsg(RespCodeEnum.FAIL.getMsg());
+        }
+        return resp;
+    }
+
 
 }
