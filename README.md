@@ -74,12 +74,16 @@
 **URL：** /goods/{page}  
 **返回格式：** json
 **请求方式：** HTTP GET  
-**请求示例：** `http://address/goods/1`  
+**请求示例：** `http://address/goods/1`
+
 **请求参数说明**
+
 | 名称 | 类型 | 说明 |
 | - | - | - |
 | page | int | 分页查询的页号，从1开始 |
+
 **返回参数说明**
+
 | 名称    | 类型   | 说明         |
 | -      | -      | -           |
 | code   | string | 应答码       |
