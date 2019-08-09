@@ -11,13 +11,13 @@ public class KafkaProducer {
     private final KafkaTemplate kafkaTemplate;
 
     @Autowired
-    public KafkaProducer(KafkaTemplate kafkaTemplate) {
+    public KafkaProducer(KafkaTemplate kafkaTemplate, KafkaSendResultHandler kafkaSendResultHandler) {
         this.kafkaTemplate = kafkaTemplate;
+        this.kafkaTemplate.setProducerListener(kafkaSendResultHandler);
     }
 
-    public String send(String msg) {
-        kafkaTemplate.send("order", msg);
-        return "success";
+    public void send(String msg) {
+        kafkaTemplate.send("test", msg);
     }
 
 
