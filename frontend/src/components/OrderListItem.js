@@ -38,7 +38,8 @@ export class OrderListItem extends Component {
             <Button
               size="small"
               type="primary"
-            >去支付</Button> 
+              disabled={this.props.item.status === '0' ? false : true}
+            >{this.props.item.status === '0' ? '待支付' : '已支付'}</Button> 
           </div>
         </div>
       </div>

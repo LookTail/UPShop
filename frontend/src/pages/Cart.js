@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { ListView, NavBar, Button, Toast } from 'antd-mobile';
+import { ListView, NavBar, Button, Toast, ActionSheet } from 'antd-mobile';
 import CartListItem from '../components/CartListItem';
 import E from '../global.js';
 import axios from 'axios';
 import qs from 'qs';
-
+import picUrl from '../assets/unionpay.png';
 
 let dataBlobs = [];
 
@@ -21,10 +21,20 @@ export class Cart extends Component {
       height: 591,
       selected: '',
       totalPrice: 0,
+      orderId: '',
     };
     E.listener.add("addCart", this.addCart);
     console.log("cart页面已加载");
   }
+
+  dataList = [
+    { url: picUrl, title: '云闪付' },
+    { url: 'https://gw.alipayobjects.com/zos/rmsportal/OpHiXAcYzmPQHcdlLFrc.png', title: '支付宝' },
+    { url: 'https://gw.alipayobjects.com/zos/rmsportal/umnHwvEgSyQtXlZjNJTt.png', title: '微信支付' },
+  ].map(obj => ({
+    icon: <img src={obj.url} alt={obj.title} style={{ width: 36 }} />,
+    title: obj.title,
+  }));
 
   componentDidMount() {
     this.setState({ isLoading: true });
@@ -35,8 +45,7 @@ export class Cart extends Component {
         isLoading: false,
         totalPrice: data.totalPrice,
       });
-    });
-      
+    });      
   }
 
   onEndReached = (event) => {
@@ -142,29 +151,46 @@ export class Cart extends Component {
 
   onClick = () => {
     Toast.loading("下单中，请稍后~", 0);
-    let result;
     setTimeout(async () => {
       await axios.post('http://localhost:8080/order/generate')
       .then((response) => {
         if(response.data.code === "0") {
-          Toast.success("下单成功~", 2, ()=>{ window.document.location.reload() });
-          result = true; 
+          // Toast.success("下单成功~", 2, ()=>{ window.document.location.reload() });
+          this.setState({ orderId: response.data.result });
+          Toast.success("下单成功，请继续完成支付", 2);
+          setTimeout(() => this.showShareActionSheet(), 2000)
         } else {
           Toast.fail("下单失败~", 2);
-          result = false;
         }
       });
     }, 3000);
-    // await axios.get('http://localhost:8080/order/generate')
-    //   .then((response) => {
-    //     if(response.data.code === "0") {
-    //       Toast.success("下单成功~", 2);
-    //       result = true; 
-    //     } else {
-    //       Toast.fail("下单失败~", 2);
-    //       result = false;
-    //     }
-    //   });
+  }
+
+  showShareActionSheet = () => {
+    ActionSheet.showShareActionSheetWithOptions({
+      options: this.dataList,
+      message: '请选择支付方式',
+    },
+    (buttonIndex) => {
+      if(buttonIndex > -1) {
+        let message;
+        this.paymentNotify(this.state.orderId).then((result) => {
+          message = result ? '支付成功' : '支付失败';
+          Toast.success(message, 3, ()=>{ window.document.location.reload()});
+        });
+      } else {
+        window.document.location.reload();
+      }  
+    });
+  }
+  
+  paymentNotify = async (id) => {
+    let result;
+    await axios.post('http://localhost:8080/order/notify', qs.stringify({ orderId: id}))
+      .then((response) => {
+        if(response.data.code === "0") result = true; 
+        else result = false;
+      });
     return result;
   }
 
@@ -217,7 +243,7 @@ export class Cart extends Component {
               type = "primary"
               style={{backgroundColor: '#00CC00'}}
               onClick={this.onClick}
-            >下单</Button> 
+            >下单并支付</Button>
           </div>
         </div>
       </div>

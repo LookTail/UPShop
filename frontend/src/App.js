@@ -20,13 +20,13 @@ class App extends React.Component {
 
   addCart = () => {
     this.setState({
-      shopBadge: ++this.state.shopBadge,
+      shopBadge: this.state.shopBadge + 1,
     });
   }
 
   deleteCart = () => {
     this.setState({
-      shopBadge: --this.state.shopBadge,
+      shopBadge: this.state.shopBadge - 1,
     });
   }
 

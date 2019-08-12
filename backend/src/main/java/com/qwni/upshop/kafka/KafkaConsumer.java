@@ -5,6 +5,7 @@ import com.qwni.upshop.common.entity.OrderItem;
 import com.qwni.upshop.dao.OrderDao;
 import com.qwni.upshop.utils.OrderIdGenerator;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -23,6 +24,8 @@ import java.util.Map;
 
 @Component
 public class KafkaConsumer {
+    private static final Logger logger = Logger.getLogger(KafkaConsumer.class);
+
     private OrderDao orderDao;
 
     @Autowired
@@ -53,7 +56,7 @@ public class KafkaConsumer {
     public void listen(@Payload List<String> records, @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int id) {
         System.out.println("一次拉取数量"+records.size());
         for(String orderId : records) {
-//            System.out.println("监听数据 Thread: " + Thread.currentThread().getId() + "partition:" + id + ":  " + s);
+            logger.info("监听数据 Thread: " + Thread.currentThread().getId() + " partition:" + id + ":  " + orderId);
             OrderItem orderItem = new OrderItem();
             orderItem.setId("101");
             orderItem.setTitle("压测专用");

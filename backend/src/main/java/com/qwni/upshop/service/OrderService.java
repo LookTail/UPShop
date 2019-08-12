@@ -7,6 +7,7 @@ import com.qwni.upshop.dao.CartDao;
 import com.qwni.upshop.dao.OrderDao;
 import com.qwni.upshop.kafka.KafkaProducer;
 import com.qwni.upshop.utils.OrderIdGenerator;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,8 @@ import java.util.List;
 
 @Component
 public class OrderService {
+    private static final Logger logger = Logger.getLogger(OrderService.class);
+
     private OrderDao orderDao;
     private CartDao cartDao;
     private KafkaProducer kafkaProducer;
@@ -51,12 +54,27 @@ public class OrderService {
         order.setItemList(orderList);
         order.setTotalPrice(String.valueOf(totalPrice));
 
-        cartDao.deleteAll();
-        if (orderDao.insertOrder(order)) {
-            return id;
-        } else {
-            return "";
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(30000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (orderDao.insertOrder(order)) {
+                    cartDao.deleteAll();
+                }
+            }
+        }).start();
+
+//        if (orderDao.insertOrder(order)) {
+//            cartDao.deleteAll();
+//            return id;
+//        } else {
+//            return "";
+//        }
+        return id;
     }
 
     public Boolean testOrder() {
@@ -74,10 +92,12 @@ public class OrderService {
             if(orderDao.changePaymentStatus(orderId)) {
                 return true;
             } else {
-                System.out.println("数据库更新订单支付状态失败");
+//                System.out.println("数据库更新订单支付状态失败");
+                logger.info("数据库更新订单支付状态失败");
                 return false;
             }
         } else {
+            logger.info("未找到订单信息，加入定时任务，订单号：" + orderId);
             scheduledTask.add(orderId);
             return true;
         }

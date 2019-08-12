@@ -4,7 +4,6 @@ import ShopListItem from '../components/ShopListItem';
 import Search from '../components/Search';
 import 'antd-mobile/dist/antd-mobile.css';
 import axios from 'axios';
-// import E from '../global.js';
 
 let dataBlobs = [];
 
