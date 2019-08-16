@@ -157,5 +157,33 @@ public class UpshopController {
         return resp;
     }
 
+    @RequestMapping(value = "timeout", method = RequestMethod.GET)
+    public BaseResp timeout() {
+        BaseResp resp = new BaseResp();
+        resp.setCode(RespCodeEnum.SUCCESS.getCode());
+        resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
+
+        try {
+            Thread.sleep(30000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return resp;
+    }
+
+    @RequestMapping(value = "plain", method = RequestMethod.GET)
+    public BaseResp plain() {
+        BaseResp resp = new BaseResp();
+//        System.out.println(Thread.currentThread().getId());
+        try {
+            Thread.sleep(200);
+        } catch (Exception e) {
+
+        }
+        resp.setCode(RespCodeEnum.SUCCESS.getCode());
+        resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
+        return resp;
+    }
+
 
 }

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class KafkaSendResultHandler implements ProducerListener {
     @Override
     public void onSuccess(ProducerRecord producerRecord, RecordMetadata recordMetadata) {
-        System.out.println("Message send success : " + producerRecord.toString());
+//        System.out.println("Message send success : " + producerRecord.toString());
     }
 
     @Override

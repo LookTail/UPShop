@@ -19,6 +19,6 @@ public class KafkaConstConfig {
     public static final String MAX_POLL_RECORDS_CONFIG = "10";
 
     // Container Factory Props
-    public static final int CONTAINER_FACTORY_CONCURRENCY = 3;
+    public static final int CONTAINER_FACTORY_CONCURRENCY = 1;
 
 }

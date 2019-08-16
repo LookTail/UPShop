@@ -54,7 +54,7 @@ public class KafkaConsumer {
 
     @KafkaListener(id = "testlistener", groupId = KafkaConstConfig.LISTENER_GROUP, topics = {KafkaConstConfig.TOPIC}, containerFactory = "batchContainerFactory")
     public void listen(@Payload List<String> records, @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int id) {
-        System.out.println("一次拉取数量"+records.size());
+//        System.out.println("一次拉取数量"+records.size());
         for(String orderId : records) {
             logger.info("监听数据 Thread: " + Thread.currentThread().getId() + " partition:" + id + ":  " + orderId);
             OrderItem orderItem = new OrderItem();
@@ -72,6 +72,7 @@ public class KafkaConsumer {
 
             orderDao.insertOrder(order);
         }
+        System.out.println("kafka监听器结束");
     }
 
 }

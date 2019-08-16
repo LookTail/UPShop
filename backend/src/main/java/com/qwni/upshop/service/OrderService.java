@@ -54,27 +54,27 @@ public class OrderService {
         order.setItemList(orderList);
         order.setTotalPrice(String.valueOf(totalPrice));
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(30000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if (orderDao.insertOrder(order)) {
-                    cartDao.deleteAll();
-                }
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    Thread.sleep(30000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                if (orderDao.insertOrder(order)) {
+//                    cartDao.deleteAll();
+//                }
+//            }
+//        }).start();
+//        return id;
 
-//        if (orderDao.insertOrder(order)) {
+        if (orderDao.insertOrder(order)) {
 //            cartDao.deleteAll();
-//            return id;
-//        } else {
-//            return "";
-//        }
-        return id;
+            return id;
+        } else {
+            return "";
+        }
     }
 
     public Boolean testOrder() {
