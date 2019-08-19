@@ -3,7 +3,8 @@ package com.qwni.upshop.common.enums;
 public enum RespCodeEnum {
     SUCCESS("0", "成功"),
     FAIL("1", "失败"),
-    LACK("2", "参数缺少");
+    LACK("2", "参数缺少"),
+    LOGIN("3", "未登录");
 
     private String code;
     private String msg;

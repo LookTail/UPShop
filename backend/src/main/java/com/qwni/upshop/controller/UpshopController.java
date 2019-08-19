@@ -1,13 +1,12 @@
 package com.qwni.upshop.controller;
 
+import com.qwni.upshop.common.annotation.AuthRequired;
 import com.qwni.upshop.common.enums.RespCodeEnum;
-import com.qwni.upshop.common.entity.Goods;
 import com.qwni.upshop.common.response.BaseResp;
 import com.qwni.upshop.service.CartService;
 import com.qwni.upshop.service.GoodsService;
 import com.qwni.upshop.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -46,6 +45,7 @@ public class UpshopController {
         return resp;
     }
 
+    @AuthRequired
     @RequestMapping(value = "cart/get", method = RequestMethod.GET)
     public BaseResp getCart() {
         BaseResp resp = new BaseResp();
@@ -55,6 +55,7 @@ public class UpshopController {
         return resp;
     }
 
+    @AuthRequired
     @RequestMapping(value = "cart/insert", method = RequestMethod.POST)
     public BaseResp insertCart(@RequestParam(value = "id") String id) {
         BaseResp resp = new BaseResp();
@@ -68,6 +69,7 @@ public class UpshopController {
         return resp;
     }
 
+    @AuthRequired
     @RequestMapping(value = "cart/delete", method = RequestMethod.POST)
     public BaseResp deleteCart(@RequestParam(value = "id") String id) {
         BaseResp resp = new BaseResp();
@@ -81,6 +83,7 @@ public class UpshopController {
         return resp;
     }
 
+    @AuthRequired
     @RequestMapping(value = "cart/amount", method = RequestMethod.POST)
     public BaseResp amount(@RequestParam(value = "id") String id, @RequestParam(value = "amount") String amount) {
         BaseResp resp = new BaseResp();
@@ -94,6 +97,7 @@ public class UpshopController {
         return resp;
     }
 
+    @AuthRequired
     @RequestMapping(value = "order/get", method = RequestMethod.GET)
     public BaseResp getOrder() {
         BaseResp resp = new BaseResp();
@@ -103,6 +107,7 @@ public class UpshopController {
         return resp;
     }
 
+    @AuthRequired
     @RequestMapping(value = "order/generate", method = RequestMethod.POST)
     public BaseResp insertOrder() {
         BaseResp resp = new BaseResp();
@@ -155,6 +160,12 @@ public class UpshopController {
             resp.setMsg(RespCodeEnum.FAIL.getMsg());
         }
         return resp;
+    }
+
+    @RequestMapping(value = "login", method = RequestMethod.POST)
+    public BaseResp login(@RequestParam(value = "id") String userId, @RequestParam(value="pwd") String password) {
+        // TODO 登录登出接口，集成到UserService，前端页面增加登录功能，axios接口统一拦截添加token
+        return null;
     }
 
     @RequestMapping(value = "timeout", method = RequestMethod.GET)
