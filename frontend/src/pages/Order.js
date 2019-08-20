@@ -3,6 +3,8 @@ import { ListView, NavBar } from 'antd-mobile';
 import OrderListItem from '../components/OrderListItem';
 import 'antd-mobile/dist/antd-mobile.css';
 import axios from 'axios';
+import PleaseLogin from '../components/PleaseLogin';
+import CustomPopover from '../components/CustomPopover';
 
 let dataBlobs = [];
 
@@ -13,7 +15,11 @@ class Order extends React.Component {
       rowHasChanged: (row1, row2) => row1 !== row2,
     });
 
+    let isLogin = false;
+    if(window.localStorage.getItem("token")) isLogin = true;
+
     this.state = {
+      isLogin: isLogin,
       dataSource,
       isLoading: true,
       height: 641,
@@ -23,13 +29,15 @@ class Order extends React.Component {
   }
 
   componentDidMount() {
-    this.requestOrderData().then( data => {
-      dataBlobs = data.result;
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
-        isLoading: false,
+    if(this.state.isLogin) {
+      this.requestOrderData().then( data => {
+        dataBlobs = data.result;
+        this.setState({
+          dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
+          isLoading: false,
+        });
       });
-    });
+    }
     
   }
 
@@ -66,8 +74,10 @@ class Order extends React.Component {
       <div>
         <NavBar 
           mode="light"
+          style={{borderBottom: '1px solid #D0D0D0'}}
+          rightContent={ this.state.isLogin ? (<CustomPopover />) : null}
         >订单</NavBar>
-        <ListView
+        {this.state.isLogin ? (<ListView
           ref={el => this.lv = el}
           dataSource={this.state.dataSource}
           renderFooter={() => (
@@ -87,7 +97,8 @@ class Order extends React.Component {
           scrollRenderAheadDistance={500}
           onEndReached={this.onEndReached}
           onEndReachedThreshold={500}
-        />
+        />) : 
+        (<PleaseLogin />)}
       </div>
     );
   }

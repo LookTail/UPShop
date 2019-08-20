@@ -6,6 +6,7 @@ import com.qwni.upshop.common.response.BaseResp;
 import com.qwni.upshop.service.CartService;
 import com.qwni.upshop.service.GoodsService;
 import com.qwni.upshop.service.OrderService;
+import com.qwni.upshop.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,12 +20,14 @@ public class UpshopController {
     private GoodsService goodsService;
     private CartService cartService;
     private OrderService orderService;
+    private UserService userService;
 
     @Autowired
-    public UpshopController(GoodsService goodsService, CartService cartService, OrderService orderService) {
+    public UpshopController(GoodsService goodsService, CartService cartService, OrderService orderService, UserService userService) {
         this.goodsService = goodsService;
         this.cartService = cartService;
         this.orderService = orderService;
+        this.userService = userService;
     }
 
     @RequestMapping(value = "goods/{page}", method = RequestMethod.GET)
@@ -164,8 +167,31 @@ public class UpshopController {
 
     @RequestMapping(value = "login", method = RequestMethod.POST)
     public BaseResp login(@RequestParam(value = "id") String userId, @RequestParam(value="pwd") String password) {
-        // TODO 登录登出接口，集成到UserService，前端页面增加登录功能，axios接口统一拦截添加token
-        return null;
+        BaseResp resp = new BaseResp();
+        String token = userService.login(userId, password);
+//        System.out.println(token);
+        if("".equals(token)) {
+            resp.setCode((RespCodeEnum.FAIL.getCode()));
+            resp.setMsg(RespCodeEnum.FAIL.getMsg());
+        } else {
+            resp.setCode(RespCodeEnum.SUCCESS.getCode());
+            resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
+            resp.setResult(token);
+        }
+        return resp;
+    }
+
+    @RequestMapping(value = "logout", method = RequestMethod.GET)
+    public BaseResp logout() {
+        BaseResp resp = new BaseResp();
+        if(userService.logout()) {
+            resp.setCode(RespCodeEnum.SUCCESS.getCode());
+            resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
+        } else {
+            resp.setCode((RespCodeEnum.FAIL.getCode()));
+            resp.setMsg(RespCodeEnum.FAIL.getMsg());
+        }
+        return resp;
     }
 
     @RequestMapping(value = "timeout", method = RequestMethod.GET)

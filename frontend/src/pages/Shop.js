@@ -1,15 +1,13 @@
 import React from 'react';
-import { ListView, NavBar, Popover, Icon, Toast } from 'antd-mobile';
+import { ListView, NavBar, Toast } from 'antd-mobile';
 import ShopListItem from '../components/ShopListItem';
 import Search from '../components/Search';
 import 'antd-mobile/dist/antd-mobile.css';
 import axios from 'axios';
+import CustomPopover from '../components/CustomPopover';
+import LoginButton from '../components/LoginButton';
 
 let dataBlobs = [];
-
-const Item = Popover.Item;
-
-const myImg = src => <img src={`https://gw.alipayobjects.com/zos/rmsportal/${src}.svg`} className="am-icon am-icon-xs" alt="" />;
 
 class Shop extends React.Component {
   constructor(props) {
@@ -18,7 +16,11 @@ class Shop extends React.Component {
       rowHasChanged: (row1, row2) => row1 !== row2,
     });
 
+    let isLogin = false;
+    if(window.localStorage.getItem("token")) isLogin = true;
+
     this.state = {
+      isLogin: isLogin,
       dataSource,
       isLoading: true,
       height: 597,
@@ -31,18 +33,6 @@ class Shop extends React.Component {
     console.log("shop页面已加载");
   }
 
-  onSelect = (opt) => {
-    this.setState({
-      visible: false,
-      selected: opt.props.value,
-    });
-  };
-  handleVisibleChange = (visible) => {
-    this.setState({
-      visible,
-    });
-  };
-
   componentDidMount() {
     Toast.loading("加载中", 0);
     this.requestGoodsData(this.state.page).then(data => {
@@ -54,23 +44,6 @@ class Shop extends React.Component {
       Toast.hide();
     });
   }
-
-  // refresh = () => {
-  //   // dataBlobs = [];
-  //   console.log("shop refresh called");
-  //   this.setState({
-  //     page: 1,
-  //     hasMore: true,
-  //   });
-  //   this.requestGoodsData(this.state.page).then(data => {
-  //     // dataBlobs = dataBlobs.concat(data.result);
-  //     dataBlobs = data.result;
-  //     this.setState({
-  //       dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
-  //       isLoading: false,
-  //     });
-  //   });
-  // }
 
   onEndReached = (event) => {
     console.log('reach end', this.state.page);
@@ -150,37 +123,10 @@ class Shop extends React.Component {
       <div>
         <NavBar 
           mode="light"
-          rightContent={
-            <Popover
-              overlayClassName="fortest"
-              overlayStyle={{ color: 'currentColor' }}
-              visible={this.state.visible}
-              overlay={[
-                (<Item key="4" value="scan" icon={myImg('tOtXhkIWzwotgGSeptou')} data-seed="logId">Scan</Item>),
-                (<Item key="5" value="special" icon={myImg('PKAgAqZWJVNwKsAJSmXd')} style={{ whiteSpace: 'nowrap' }}>My Qrcode</Item>),
-                (<Item key="6" value="button ct" icon={myImg('uQIYTFeRrjPELImDRrPt')}>
-                  <span style={{ marginRight: 5 }}>Help</span>
-                </Item>),
-              ]}
-              align={{
-                overflow: { adjustY: 0, adjustX: 0 },
-                offset: [-10, 0],
-              }}
-              onVisibleChange={this.handleVisibleChange}
-              onSelect={this.onSelect}
-            >
-            <div
-              style={{
-                height: '100%',
-                padding: '0 15px',
-                marginRight: '-15px',
-                display: 'flex',
-                alignItems: 'center',
-              }}
-            >
-              <Icon type="ellipsis" color="#000" />
-            </div>
-          </Popover>}
+          rightContent={ this.state.isLogin ?
+            (<CustomPopover />) : 
+            (<LoginButton />)
+          }
         >商品列表</NavBar>
         <Search dataUpdate={this.dataUpdate.bind(this)} cancelSearch={this.cancelSearch.bind(this)} />
         <ListView

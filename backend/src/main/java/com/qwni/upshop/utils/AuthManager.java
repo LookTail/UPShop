@@ -30,12 +30,14 @@ public class AuthManager {
         return tokenManager.generateToken(userId);
     }
 
-    public void logout() {
+    public Boolean logout() {
         String token = getTokenFromHeader();
         if(!StringUtils.isEmpty(token)) {
             tokenManager.deleteToken(token);
+            return true;
         } else {
             System.out.println("登出不对啊，没有token登出啥呢？");
+            return false;
         }
     }
 

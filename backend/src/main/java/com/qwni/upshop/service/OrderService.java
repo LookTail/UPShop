@@ -70,7 +70,7 @@ public class OrderService {
 //        return id;
 
         if (orderDao.insertOrder(order)) {
-//            cartDao.deleteAll();
+            cartDao.deleteAll();
             return id;
         } else {
             return "";
@@ -93,8 +93,9 @@ public class OrderService {
                 return true;
             } else {
 //                System.out.println("数据库更新订单支付状态失败");
-                logger.info("数据库更新订单支付状态失败");
-                return false;
+                logger.info("数据库更新订单支付状态失败，加入定时任务继续尝试");
+                scheduledTask.add(orderId);
+                return true;
             }
         } else {
             logger.info("未找到订单信息，加入定时任务，订单号：" + orderId);

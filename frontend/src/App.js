@@ -6,6 +6,27 @@ import Cart from './pages/Cart';
 import Order from './pages/Order'
 import 'antd-mobile/dist/antd-mobile.css';
 import E from './global.js';
+import axios from 'axios';
+
+// window.localStorage.setItem("token", "2019081980254135");
+// window.localStorage.removeItem("token");
+axios.interceptors.request.use((config) => {
+  config.headers = {
+    'token': window.localStorage.getItem("token"),
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
+axios.interceptors.response.use((response) => {
+  if(response.data.code === '3') {
+    window.localStorage.removeItem("token");
+  }
+  return response;
+}, (error) => {
+  return Promise.reject(error);
+});
 
 class App extends React.Component {
   constructor(props) {

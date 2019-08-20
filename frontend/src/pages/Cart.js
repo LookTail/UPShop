@@ -5,6 +5,8 @@ import E from '../global.js';
 import axios from 'axios';
 import qs from 'qs';
 import picUrl from '../assets/unionpay.png';
+import PleaseLogin from '../components/PleaseLogin';
+import CustomPopover from '../components/CustomPopover';
 
 let dataBlobs = [];
 
@@ -14,8 +16,10 @@ export class Cart extends Component {
     const dataSource = new ListView.DataSource({
       rowHasChanged: (row1, row2) => { return row1 !== row2; }
     });
-
+    let isLogin = false;
+    if(window.localStorage.getItem("token")) isLogin = true;
     this.state = {
+      isLogin: isLogin,
       dataSource,
       isLoading: true,
       height: 591,
@@ -37,15 +41,17 @@ export class Cart extends Component {
   }));
 
   componentDidMount() {
-    this.setState({ isLoading: true });
-    this.requestCartData().then( data => {
-      dataBlobs = dataBlobs.concat(data.itemList);
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
-        isLoading: false,
-        totalPrice: data.totalPrice,
+    if(this.state.isLogin) {
+      this.setState({ isLoading: true });
+      this.requestCartData().then( data => {
+        dataBlobs = dataBlobs.concat(data.itemList);
+        this.setState({
+          dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
+          isLoading: false,
+          totalPrice: data.totalPrice,
+        });
       });
-    });      
+    }    
   }
 
   onEndReached = (event) => {
@@ -74,7 +80,8 @@ export class Cart extends Component {
   }
 
   addCart = (itemId) => {
-    this.setState({ isLoading: true});    
+    this.setState({ isLoading: true});
+    console.log("id:" + itemId);    
     this.insertCartItem(itemId).then(s => {
       if(s) {
         this.requestCartData().then((data) => {
@@ -93,7 +100,9 @@ export class Cart extends Component {
 
   insertCartItem = async (id) => {
     let result;
-    await axios.post('http://localhost:8080/cart/insert', qs.stringify({"id": id}))
+    let formData = new URLSearchParams();
+    formData.append('id', id);
+    await axios.post('http://localhost:8080/cart/insert', formData)
       .then((response) => {
         if(response.data.code === "0") result = true; 
         else result = false;
@@ -103,8 +112,9 @@ export class Cart extends Component {
 
   deleteCartItem = async (id) => {
     let result;
-    console.log("delete called" + id);
-    await axios.post('http://localhost:8080/cart/delete', qs.stringify({id: id}))
+    let formData = new URLSearchParams();
+    formData.append('id', id);
+    await axios.post('http://localhost:8080/cart/delete', formData)
       .then((response) => {
         if(response.data.code === "0") result = true; 
         else result = false;
@@ -140,7 +150,10 @@ export class Cart extends Component {
 
   requestAmount = async (val, id) => {
     let result;
-    await axios.post('http://localhost:8080/cart/amount', qs.stringify({id: id, amount: val}))
+    let formData = new URLSearchParams();
+    formData.append('id', id);
+    formData.append('amount', val);
+    await axios.post('http://localhost:8080/cart/amount', formData)
       .then((response) => {
         if(response.data.code === "0") result = true; 
         else result = false;
@@ -186,7 +199,9 @@ export class Cart extends Component {
   
   paymentNotify = async (id) => {
     let result;
-    await axios.post('http://localhost:8080/order/notify', qs.stringify({ orderId: id}))
+    let formData = new URLSearchParams();
+    formData.append('orderId', id);
+    await axios.post('http://localhost:8080/order/notify', formData)
       .then((response) => {
         if(response.data.code === "0") result = true; 
         else result = false;
@@ -208,44 +223,52 @@ export class Cart extends Component {
         />
       );
     }
+    const isLogin = this.state.isLogin;
 
-    return (
+    return (  
       <div>
         <NavBar 
           mode="light"
           style={{borderBottom: '1px solid #D0D0D0'}}
+          rightContent={ this.state.isLogin ?(<CustomPopover />) : null}
         >购物车</NavBar>
-        <ListView
-          ref={el => this.lv = el}
-          dataSource={this.state.dataSource}
-          renderFooter={() => (
-            <div style={{ padding: '5px 30px', textAlign: 'center' }}>
-              {this.state.isLoading ? 'Loading...' : '------------- 我是底线 -------------'}
-            </div>)
-          }
-          renderRow={(item) => (<CartListItem item={item} deleteItem={this.deleteItem.bind(this)} stepperChange={this.stepperChange.bind(this)}/>)}
-          renderSeparator={separator}
-          style={{
-            height: this.state.height,
-            overflow: 'auto',
-          }}
-          initialListSize = {10}
-          pageSize={10}
-          scrollRenderAheadDistance={500}
-          onEndReached={this.onEndReached}
-          onEndReachedThreshold={500}
-        />
-        <div style={{ display: 'flex', padding: '10px 0', height: '50px', backgroundColor: '#808080' }}>
-          <span style={{ fontSize: '14px', color: '#FFFFFF', lineHeight: '30px', marginLeft: '15px' }}>总金额：￥{this.state.totalPrice}</span>
-          <div style={{ marginLeft: 'auto', marginRight: '15px'}}>
-            <Button
-              size = "small"
-              type = "primary"
-              style={{backgroundColor: '#00CC00'}}
-              onClick={this.onClick}
-            >下单并支付</Button>
+        { isLogin ? (
+          <div>
+            <ListView
+              ref={el => this.lv = el}
+              dataSource={this.state.dataSource}
+              renderFooter={() => (
+                <div style={{ padding: '5px 30px', textAlign: 'center' }}>
+                  {this.state.isLoading ? 'Loading...' : '------------- 我是底线 -------------'}
+                </div>)
+              }
+              renderRow={(item) => (<CartListItem item={item} deleteItem={this.deleteItem.bind(this)} stepperChange={this.stepperChange.bind(this)}/>)}
+              renderSeparator={separator}
+              style={{
+                height: this.state.height,
+                overflow: 'auto',
+              }}
+              initialListSize = {10}
+              pageSize={10}
+              scrollRenderAheadDistance={500}
+              onEndReached={this.onEndReached}
+              onEndReachedThreshold={500}
+            />
+            <div style={{ display: 'flex', padding: '10px 0', height: '50px', backgroundColor: '#808080' }}>
+              <span style={{ fontSize: '14px', color: '#FFFFFF', lineHeight: '30px', marginLeft: '15px' }}>总金额：￥{this.state.totalPrice}</span>
+              <div style={{ marginLeft: 'auto', marginRight: '15px'}}>
+                <Button
+                  size = "small"
+                  type = "primary"
+                  style={{backgroundColor: '#00CC00'}}
+                  onClick={this.onClick}
+                >下单并支付</Button>
+              </div>
+            </div>
           </div>
-        </div>
+          ) : (
+          <PleaseLogin />
+          )}
       </div>
     );
   }

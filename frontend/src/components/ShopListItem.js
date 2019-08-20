@@ -1,15 +1,16 @@
 import React, { Component } from 'react'
-import { Button } from 'antd-mobile'
+import { Button, Modal, Toast } from 'antd-mobile'
 import E from '../global.js';
+import axios from 'axios'
+
+const prompt = Modal.prompt;
 
 export class ShopListItem extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       added: false,
     }
-
   }
 
   changeAddStatus = () => {
@@ -19,8 +20,43 @@ export class ShopListItem extends Component {
   }
 
   onClick = () => {
-    E.listener.call("addCart", this.props.item.id);
-    this.changeAddStatus();    
+    if(window.localStorage.getItem("token")) {
+      E.listener.call("addCart", this.props.item.id);
+      this.changeAddStatus();   
+    } else {
+      prompt(
+        '登录',
+        '请输入用户名和密码',
+        this.login,
+        'login-password',
+        null,
+        ['用户名', '密码'],
+      )
+    }  
+  }
+
+  login = (id, pwd) => {
+    let formData = new URLSearchParams();
+    formData.append('id', id);
+    formData.append('pwd', pwd);
+    console.log(id + pwd);
+    axios.post('http://localhost:8080/login', formData).then((response) => {
+      if(response.data.code === '0') {
+        window.localStorage.setItem("token", response.data.result);
+        window.document.location.reload();
+      } else {
+        Toast.fail("用户名或密码错误", 2);
+        setTimeout(
+        () => prompt(
+          '登录',
+          '请输入用户名和密码',
+          this.login,
+          'login-password',
+          null,
+          ['用户名', '密码'],
+        )
+      , 2000)}
+    });
   }
 
   render() {
