@@ -114,14 +114,19 @@ public class UpshopController {
     @RequestMapping(value = "order/generate", method = RequestMethod.POST)
     public BaseResp insertOrder() {
         BaseResp resp = new BaseResp();
-        String id = orderService.generateOrder();
-        if(!id.isEmpty()) {
-            resp.setCode(RespCodeEnum.SUCCESS.getCode());
-            resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
-            resp.setResult(id);
+        if(orderService.checkSalesAndReduce()) {
+            String id = orderService.generateOrder();
+            if (!id.isEmpty()) {
+                resp.setCode(RespCodeEnum.SUCCESS.getCode());
+                resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
+                resp.setResult(id);
+            } else {
+                resp.setCode((RespCodeEnum.FAIL.getCode()));
+                resp.setMsg(RespCodeEnum.FAIL.getMsg());
+            }
         } else {
-            resp.setCode((RespCodeEnum.FAIL.getCode()));
-            resp.setMsg(RespCodeEnum.FAIL.getMsg());
+            resp.setCode((RespCodeEnum.SOLDOUT.getCode()));
+            resp.setMsg(RespCodeEnum.SOLDOUT.getMsg());
         }
         return resp;
     }

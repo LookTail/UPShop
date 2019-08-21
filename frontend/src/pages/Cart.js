@@ -3,7 +3,6 @@ import { ListView, NavBar, Button, Toast, ActionSheet } from 'antd-mobile';
 import CartListItem from '../components/CartListItem';
 import E from '../global.js';
 import axios from 'axios';
-import qs from 'qs';
 import picUrl from '../assets/unionpay.png';
 import PleaseLogin from '../components/PleaseLogin';
 import CustomPopover from '../components/CustomPopover';
@@ -23,7 +22,6 @@ export class Cart extends Component {
       dataSource,
       isLoading: true,
       height: 591,
-      selected: '',
       totalPrice: 0,
       orderId: '',
     };
@@ -167,12 +165,15 @@ export class Cart extends Component {
     setTimeout(async () => {
       await axios.post('http://localhost:8080/order/generate')
       .then((response) => {
+        console.log(response.data);
         if(response.data.code === "0") {
           // Toast.success("下单成功~", 2, ()=>{ window.document.location.reload() });
           this.setState({ orderId: response.data.result });
           Toast.success("下单成功，请继续完成支付", 2);
           setTimeout(() => this.showShareActionSheet(), 2000)
-        } else {
+        } else if(response.data.code === "4") {
+          Toast.fail("商品卖完啦~", 2);
+        }else {
           Toast.fail("下单失败~", 2);
         }
       });
@@ -186,11 +187,14 @@ export class Cart extends Component {
     },
     (buttonIndex) => {
       if(buttonIndex > -1) {
-        let message;
-        this.paymentNotify(this.state.orderId).then((result) => {
-          message = result ? '支付成功' : '支付失败';
-          Toast.success(message, 3, ()=>{ window.document.location.reload()});
-        });
+        Toast.loading("支付中，请稍后~", 0);
+        setTimeout(() => {
+          let message;
+          this.paymentNotify(this.state.orderId).then((result) => {
+            message = result ? '支付成功' : '支付失败';
+            Toast.success(message, 3, ()=>{ window.document.location.reload()});
+          });
+        }, 2000);
       } else {
         window.document.location.reload();
       }  

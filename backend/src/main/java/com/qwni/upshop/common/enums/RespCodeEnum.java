@@ -4,7 +4,8 @@ public enum RespCodeEnum {
     SUCCESS("0", "成功"),
     FAIL("1", "失败"),
     LACK("2", "参数缺少"),
-    LOGIN("3", "未登录");
+    LOGIN("3", "未登录"),
+    SOLDOUT("4", "商品库存不足");
 
     private String code;
     private String msg;

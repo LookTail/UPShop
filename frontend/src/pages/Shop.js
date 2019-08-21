@@ -1,5 +1,6 @@
 import React from 'react';
-import { ListView, NavBar, Toast } from 'antd-mobile';
+import { ListView, NavBar, Toast, NoticeBar } from 'antd-mobile';
+import { Link } from 'react-router-dom';
 import ShopListItem from '../components/ShopListItem';
 import Search from '../components/Search';
 import 'antd-mobile/dist/antd-mobile.css';
@@ -23,7 +24,7 @@ class Shop extends React.Component {
       isLogin: isLogin,
       dataSource,
       isLoading: true,
-      height: 597,
+      height: 561,
       visible: false,
       selected: '',
       page: 1,
@@ -104,6 +105,12 @@ class Shop extends React.Component {
     return data;
   }
 
+  closeNoticeBar = () => {
+    this.setState({
+      height: 597
+    })
+  }
+
   render() {
 	  const separator = (sectionID, rowID) => {
       return (
@@ -129,6 +136,9 @@ class Shop extends React.Component {
           }
         >商品列表</NavBar>
         <Search dataUpdate={this.dataUpdate.bind(this)} cancelSearch={this.cancelSearch.bind(this)} />
+        <NoticeBar mode="closable" marqueeProps={{ loop: true, style: { padding: '0 7.5px' } }} onClick={this.closeNoticeBar}>
+          <Link to='/rush'>周杰伦上海演唱会门票限时抢购即将开启，赶紧来抢购吧~</Link>
+        </NoticeBar>
         <ListView
           ref={el => this.lv = el}
           dataSource={this.state.dataSource}

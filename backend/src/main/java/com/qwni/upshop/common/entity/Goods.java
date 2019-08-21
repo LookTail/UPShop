@@ -10,7 +10,7 @@ public class Goods {
     private String title;
     private String des;
     private String img;
-    private String sales;
+    private Integer sales;
     private String price;
 
     public String getId() {
@@ -45,11 +45,11 @@ public class Goods {
         this.img = img;
     }
 
-    public String getSales() {
+    public Integer getSales() {
         return sales;
     }
 
-    public void setSales(String sales) {
+    public void setSales(Integer sales) {
         this.sales = sales;
     }
 
