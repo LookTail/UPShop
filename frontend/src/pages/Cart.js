@@ -172,7 +172,7 @@ export class Cart extends Component {
           Toast.success("下单成功，请继续完成支付", 2);
           setTimeout(() => this.showShareActionSheet(), 2000)
         } else if(response.data.code === "4") {
-          Toast.fail("商品卖完啦~", 2);
+          Toast.fail("商品库存不足~", 2);
         }else {
           Toast.fail("下单失败~", 2);
         }

@@ -1,5 +1,6 @@
 package com.qwni.upshop.kafka;
 
+import com.alibaba.fastjson.JSON;
 import com.qwni.upshop.common.entity.Order;
 import com.qwni.upshop.common.entity.OrderItem;
 import com.qwni.upshop.dao.OrderDao;
@@ -55,21 +56,24 @@ public class KafkaConsumer {
     @KafkaListener(id = "testlistener", groupId = KafkaConstConfig.LISTENER_GROUP, topics = {KafkaConstConfig.TOPIC}, containerFactory = "batchContainerFactory")
     public void listen(@Payload List<String> records, @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int id) {
 //        System.out.println("一次拉取数量"+records.size());
-        for(String orderId : records) {
-            logger.info("监听数据 Thread: " + Thread.currentThread().getId() + " partition:" + id + ":  " + orderId);
-            OrderItem orderItem = new OrderItem();
-            orderItem.setId("101");
-            orderItem.setTitle("压测专用");
-            orderItem.setAmount("101");
-            orderItem.setPrice("101");
-
-            Order order = new Order();
-            List<OrderItem> orderList = new ArrayList<>();
-            orderList.add(orderItem);
-            order.setOrderId(orderId);
-            order.setItemList(orderList);
-            order.setTotalPrice("101");
-
+        for(String orderString : records) {
+            Order order = JSON.parseObject(orderString, Order.class);
+            logger.info("监听数据 Thread: " + Thread.currentThread().getId() + " partition:" + id + ":  " + order);
+            System.out.println(order.toString());
+            System.out.println(order.getOrderId() + order.getItemList().get(0).getTitle());
+//            OrderItem orderItem = new OrderItem();
+//            orderItem.setId("101");
+//            orderItem.setTitle("压测专用");
+//            orderItem.setAmount("101");
+//            orderItem.setPrice("101");
+//
+//            Order order = new Order();
+//            List<OrderItem> orderList = new ArrayList<>();
+//            orderList.add(orderItem);
+//            order.setOrderId(orderId);
+//            order.setItemList(orderList);
+//            order.setTotalPrice("101");
+//
             orderDao.insertOrder(order);
         }
         System.out.println("kafka监听器结束");

@@ -96,7 +96,7 @@ public class OrderService {
 
     public Boolean testOrder() {
         String id = OrderIdGenerator.createID();
-        kafkaProducer.send(id);
+//        kafkaProducer.send(id);
         return true;
     }
 

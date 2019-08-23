@@ -18,9 +18,9 @@ export class OrderListItem extends Component {
       this.props.item.itemList.map((item, i) => {
         return (
           <div style={{ display: 'flex', lineHeight: 1, width: '100%', paddingBottom: '15px' }} key={i}>
-            <div style={{ fontSize: '14px', width: '70%' }}>{item.title}</div>
-            <div style={{ fontSize: '12px', color: '#787878', width: '10%', lineHeight: '14px' }}>x {item.amount}</div>
-            <span style={{ fontSize: '14px', color: '#404040' }}>单价: {item.price}</span>
+            <div style={{ fontSize: '14px', width: '60%' }}>{item.title}</div>
+            <div style={{ fontSize: '12px', color: '#787878', width: '20%', lineHeight: '14px', textAlign: 'right', paddingRight: '15px' }}>x {item.amount}</div>
+            <span style={{ fontSize: '14px', color: '#404040', width: '20%' }}>单价: {item.price}</span>
           </div>
         );
       })

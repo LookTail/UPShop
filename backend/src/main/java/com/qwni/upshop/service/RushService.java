@@ -5,6 +5,7 @@ import com.qwni.upshop.common.entity.OrderItem;
 import com.qwni.upshop.common.entity.Rush;
 import com.qwni.upshop.dao.OrderDao;
 import com.qwni.upshop.dao.RushDao;
+import com.qwni.upshop.kafka.KafkaProducer;
 import com.qwni.upshop.utils.OrderIdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,11 +20,13 @@ import java.util.List;
 public class RushService {
     private RushDao rushDao;
     private OrderDao orderDao;
+    private KafkaProducer kafkaProducer;
 
     @Autowired
-    public RushService(RushDao rushDao, OrderDao orderDao) {
+    public RushService(RushDao rushDao, OrderDao orderDao, KafkaProducer kafkaProducer) {
         this.rushDao = rushDao;
         this.orderDao = orderDao;
+        this.kafkaProducer = kafkaProducer;
     }
 
     public Rush getRushInfo() {
@@ -34,12 +37,6 @@ public class RushService {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String token = request.getHeader("token");
         return rushDao.hashRushed(token);
-    }
-
-    public Boolean insertHasRushed() {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        String token = request.getHeader("token");
-        return rushDao.insertHasRushed(token);
     }
 
     public Boolean go(Integer day, Integer place, Integer num) {
@@ -62,6 +59,6 @@ public class RushService {
         order.setOrderId(id);
         order.setItemList(orderList);
         order.setTotalPrice(String.valueOf(totalPrice));
-        return rushDao.go(day, place, num) && rushDao.insertHasRushed(token) && orderDao.insertOrder(order);
+        return rushDao.go(day, place, num) && rushDao.insertHasRushed(token) && kafkaProducer.send(order);
     }
 }
