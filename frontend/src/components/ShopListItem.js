@@ -84,7 +84,7 @@ export class ShopListItem extends Component {
             <Button
               size = "small"
               type = "primary"
-              disabled = {this.state.added}
+              disabled = {this.state.added || this.props.item.sales === 0}
               onClick = {this.onClick}
             >{this.state.added ? '已添加' : '添加'}</Button> 
           </div>

@@ -1,17 +1,12 @@
 package com.qwni.upshop.controller;
 
 import com.qwni.upshop.common.annotation.AuthRequired;
+import com.qwni.upshop.common.entity.Rush;
 import com.qwni.upshop.common.enums.RespCodeEnum;
 import com.qwni.upshop.common.response.BaseResp;
-import com.qwni.upshop.service.CartService;
-import com.qwni.upshop.service.GoodsService;
-import com.qwni.upshop.service.OrderService;
-import com.qwni.upshop.service.UserService;
+import com.qwni.upshop.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/")
@@ -21,13 +16,16 @@ public class UpshopController {
     private CartService cartService;
     private OrderService orderService;
     private UserService userService;
+    private RushService rushService;
 
     @Autowired
-    public UpshopController(GoodsService goodsService, CartService cartService, OrderService orderService, UserService userService) {
+    public UpshopController(GoodsService goodsService, CartService cartService, OrderService orderService,
+                            UserService userService, RushService rushService) {
         this.goodsService = goodsService;
         this.cartService = cartService;
         this.orderService = orderService;
         this.userService = userService;
+        this.rushService = rushService;
     }
 
     @RequestMapping(value = "goods/{page}", method = RequestMethod.GET)
@@ -195,6 +193,42 @@ public class UpshopController {
         } else {
             resp.setCode((RespCodeEnum.FAIL.getCode()));
             resp.setMsg(RespCodeEnum.FAIL.getMsg());
+        }
+        return resp;
+    }
+
+//    @AuthRequired
+    @RequestMapping(value = "rush/get", method = RequestMethod.GET)
+    public BaseResp getRushInfo() {
+        BaseResp resp = new BaseResp();
+        Rush result = rushService.getRushInfo();
+        if(result != null) {
+            resp.setCode(RespCodeEnum.SUCCESS.getCode());
+            resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
+            resp.setResult(result);
+        } else {
+            resp.setCode((RespCodeEnum.FAIL.getCode()));
+            resp.setMsg(RespCodeEnum.FAIL.getMsg());
+        }
+        return resp;
+    }
+
+//    @AuthRequired
+    @RequestMapping(value = "rush/go", method = RequestMethod.POST)
+    public BaseResp rushGo(@RequestParam(value = "day") Integer day, @RequestParam(value="place") Integer place,
+                           @RequestParam(value = "num") Integer num) {
+        BaseResp resp = new BaseResp();
+        if(rushService.hasRushed()) {
+            if(rushService.go(day, place, num)) {
+                resp.setCode(RespCodeEnum.SUCCESS.getCode());
+                resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
+            } else {
+                resp.setCode((RespCodeEnum.FAIL.getCode()));
+                resp.setMsg(RespCodeEnum.FAIL.getMsg());
+            }
+        } else {
+            resp.setCode((RespCodeEnum.HASRUSHED.getCode()));
+            resp.setMsg(RespCodeEnum.HASRUSHED.getMsg());
         }
         return resp;
     }
