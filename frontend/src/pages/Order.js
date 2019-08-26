@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListView, NavBar } from 'antd-mobile';
+import { ListView, NavBar, NoticeBar } from 'antd-mobile';
 import OrderListItem from '../components/OrderListItem';
 import 'antd-mobile/dist/antd-mobile.css';
 import axios from 'axios';
@@ -22,7 +22,7 @@ class Order extends React.Component {
       isLogin: isLogin,
       dataSource,
       isLoading: true,
-      height: 641,
+      height: 605,
     };
 
     console.log("order页面已加载");  
@@ -77,6 +77,9 @@ class Order extends React.Component {
           style={{borderBottom: '1px solid #D0D0D0'}}
           rightContent={ this.state.isLogin ? (<CustomPopover />) : null}
         >订单</NavBar>
+        <NoticeBar marqueeProps={{ loop: true, style: { padding: '0 7.5px' } }}>
+          抢票过程中订单可能出现延迟，请耐心等待~
+        </NoticeBar>
         {this.state.isLogin ? (<ListView
           ref={el => this.lv = el}
           dataSource={this.state.dataSource}

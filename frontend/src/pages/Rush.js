@@ -97,7 +97,7 @@ export class Rush extends Component {
     let year = date.getFullYear();
     let month = date.getMonth();
     let day = date.getDate();
-    let hour = 11;
+    let hour = 10;
     let minute = 30;
     let second = 0;
     let nowTime = Date.now();
