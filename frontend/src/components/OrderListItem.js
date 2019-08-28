@@ -2,8 +2,23 @@ import React, { Component } from 'react'
 import { Button, ActionSheet, Toast } from 'antd-mobile'
 import picUrl from '../assets/unionpay.png';
 import axios from 'axios'
+import E from '../global';
 
 export class OrderListItem extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      leftSecond: 0,
+      leftMinute: 0,
+    }
+  }
+
+  componentDidMount() {
+    if(this.props.item.createdAt !== null) { 
+      this.timeCount();
+    }
+  }
+
   dataList = [
     { url: picUrl, title: '云闪付' },
     { url: 'https://gw.alipayobjects.com/zos/rmsportal/OpHiXAcYzmPQHcdlLFrc.png', title: '支付宝' },
@@ -61,7 +76,37 @@ export class OrderListItem extends Component {
     return result;
   }
 
+  timeCount = () => {
+    let date = new Date();
+    let year = date.getFullYear();
+    let month = date.getMonth();
+    let day = date.getDate();
+    let expire = new Date(this.props.item.createdAt);
+    expire.setMinutes(expire.getMinutes() + 10);
+    // console.log(expire);
+    let hour = expire.getHours();
+    let minute = expire.getMinutes();
+    let second = expire.getSeconds();
+    let nowTime = Date.now();
+    let time = Number(new Date(year,month,day,hour,minute,second));
+    let timeDiff = Math.round((time - nowTime)/1000);
+    // let leftHour = parseInt(timeDiff/3600%24);
+    let leftMinute = parseInt(timeDiff/60%60);
+    let leftSecond = timeDiff%60;
+    this.setState({
+      leftMinute: leftMinute,
+      leftSecond: leftSecond
+    })
+    if(leftMinute <=0 && leftSecond <=0) {
+      E.listener.call("updateOrderList");
+      return;
+    }
+    setTimeout(this.timeCount, 1000);
+    
+  }
+
   render() {
+    let timeCount = (this.state.leftMinute < 10 ? '0'+this.state.leftMinute : this.state.leftMinute) + ' : ' + (this.state.leftSecond < 10 ? '0'+this.state.leftSecond : this.state.leftSecond);
     return (
       <div style={{ padding: '0 15px' }}>
         <div
@@ -78,7 +123,8 @@ export class OrderListItem extends Component {
         </div>
         <div style={{ display: 'flex', padding: '15px 0' }}>
           <span style={{ fontSize: '14px', color: '#404040', lineHeight: '30px' }}>总金额：{this.props.item.totalPrice}</span>
-          <div style={{ marginTop: 'auto', marginLeft: 'auto', marginRight: 2}}>
+          {this.state.leftMinute > 0 || this.state.leftSecond > 0 ? (<span style={{ fontSize: '14px', color: '#F00000', lineHeight: '30px', marginLeft: '80px'}}>{timeCount}</span>) : null }
+          <div style={{ marginTop: 'auto', marginLeft: 'auto', marginRight: '2px'}}>
             <Button
               size="small"
               type="primary"

@@ -3,6 +3,7 @@ package com.qwni.upshop.service;
 import com.qwni.upshop.utils.AuthManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.DigestUtils;
 
 @Component
 public class UserService {
@@ -15,7 +16,8 @@ public class UserService {
 
     public String login(String userId, String pwd) {
         String token = "";
-        if("123456".equals(userId) && "123456".equals(pwd)) {
+        String md5Pwd = DigestUtils.md5DigestAsHex("123456".getBytes());
+        if("niqiaowei".equals(userId) && md5Pwd.equals(pwd)) {
 //            System.out.println("yes");
             token = authManager.login(userId);
         }

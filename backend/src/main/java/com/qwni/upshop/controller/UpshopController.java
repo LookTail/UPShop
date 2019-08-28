@@ -132,7 +132,7 @@ public class UpshopController {
     @RequestMapping(value = "order/delete", method = RequestMethod.GET)
     public BaseResp deleteOrder() {
         BaseResp resp = new BaseResp();
-        if(orderService.deleteOrder()) {
+        if(orderService.deleteAllOrder()) {
             resp.setCode(RespCodeEnum.SUCCESS.getCode());
             resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
         } else {

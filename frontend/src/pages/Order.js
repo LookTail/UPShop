@@ -5,6 +5,7 @@ import 'antd-mobile/dist/antd-mobile.css';
 import axios from 'axios';
 import PleaseLogin from '../components/PleaseLogin';
 import CustomPopover from '../components/CustomPopover';
+import E from '../global';
 
 let dataBlobs = [];
 
@@ -24,6 +25,7 @@ class Order extends React.Component {
       isLoading: true,
       height: 605,
     };
+    E.listener.add("updateOrderList", this.updateOrderList);
 
     console.log("order页面已加载");  
   }
@@ -50,9 +52,18 @@ class Order extends React.Component {
     return data;
   }
 
-
   onEndReached = (event) => {
     console.log('reach end', event);
+  }
+
+  updateOrderList = () => {
+    this.requestOrderData().then( data => {
+      dataBlobs = data.result;
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
+        isLoading: false,
+      });
+    });
   }
 
   render() {

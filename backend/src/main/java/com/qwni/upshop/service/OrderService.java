@@ -71,21 +71,6 @@ public class OrderService {
         order.setItemList(orderList);
         order.setTotalPrice(String.valueOf(totalPrice));
 
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    Thread.sleep(30000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                if (orderDao.insertOrder(order)) {
-//                    cartDao.deleteAll();
-//                }
-//            }
-//        }).start();
-//        return id;
-
         if (orderDao.insertOrder(order)) {
             cartDao.deleteAll();
             return id;
@@ -100,24 +85,29 @@ public class OrderService {
         return true;
     }
 
-    public Boolean deleteOrder() {
-        return orderDao.deleteOrder();
+    public Boolean deleteAllOrder() {
+        return orderDao.deleteAllOrder();
     }
 
     public Boolean paymentNotify(String orderId) {
+//        if(orderDao.hasOrder(orderId)) {
+//            if(orderDao.changePaymentStatus(orderId)) {
+//                return true;
+//            } else {
+//                logger.info("数据库更新订单支付状态失败，加入定时任务继续尝试");
+//                scheduledTask.add(orderId);
+//                return true;
+//            }
+//        } else {
+//            logger.info("未找到订单信息，加入定时任务，订单号：" + orderId);
+//            scheduledTask.add(orderId);
+//            return true;
+//        }
         if(orderDao.hasOrder(orderId)) {
-            if(orderDao.changePaymentStatus(orderId)) {
-                return true;
-            } else {
-//                System.out.println("数据库更新订单支付状态失败");
-                logger.info("数据库更新订单支付状态失败，加入定时任务继续尝试");
-                scheduledTask.add(orderId);
-                return true;
-            }
+            return orderDao.changePaymentStatus(orderId);
         } else {
-            logger.info("未找到订单信息，加入定时任务，订单号：" + orderId);
-            scheduledTask.add(orderId);
-            return true;
+            logger.info("没有修改支付状态的订单信息");
+            return false;
         }
     }
 

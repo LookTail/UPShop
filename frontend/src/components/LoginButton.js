@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 import { Toast, Modal } from 'antd-mobile'
+import md5 from 'md5'
 
 const prompt = Modal.prompt;
 
@@ -8,7 +9,8 @@ export class LoginButton extends Component {
   login = (id, pwd) => {
     let formData = new URLSearchParams();
     formData.append('id', id);
-    formData.append('pwd', pwd);
+    let md5Pwd = md5(pwd);
+    formData.append('pwd', md5Pwd);
     axios.post('http://localhost:8080/login', formData).then((response) => {
       console.log(response.data);
       if(response.data.code === '0') {

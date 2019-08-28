@@ -266,6 +266,7 @@ export class Cart extends Component {
                   type = "primary"
                   style={{backgroundColor: '#00CC00'}}
                   onClick={this.onClick}
+                  disabled={dataBlobs.length === 0 ? true : false}
                 >下单并支付</Button>
               </div>
             </div>

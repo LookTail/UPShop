@@ -50,6 +50,12 @@ export class Rush extends Component {
     this.timeCount(); 
   }
 
+  componentWillUnmount() {
+    this.setState = (state, callback) => {
+      return;
+    }
+  }
+
   getRushInfo = async () => {
     let rushInfo = null;
     await axios.get('http://localhost:8080/rush/get').then((response) => {

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.qwni.upshop.common.entity.Order;
 import com.qwni.upshop.common.entity.OrderItem;
 import com.qwni.upshop.dao.OrderDao;
+import com.qwni.upshop.service.ScheduledTask;
 import com.qwni.upshop.utils.OrderIdGenerator;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.log4j.Logger;
@@ -17,10 +18,7 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Component
@@ -28,10 +26,12 @@ public class KafkaConsumer {
     private static final Logger logger = Logger.getLogger(KafkaConsumer.class);
 
     private OrderDao orderDao;
+    private ScheduledTask scheduledTask;
 
     @Autowired
-    public KafkaConsumer(OrderDao orderDao) {
+    public KafkaConsumer(OrderDao orderDao, ScheduledTask scheduledTask) {
         this.orderDao = orderDao;
+        this.scheduledTask = scheduledTask;
     }
 
     private Map<String, Object> consumerProps() {
@@ -61,20 +61,12 @@ public class KafkaConsumer {
             logger.info("监听数据 Thread: " + Thread.currentThread().getId() + " partition:" + id + ":  " + order);
             System.out.println(order.toString());
             System.out.println(order.getOrderId() + order.getItemList().get(0).getTitle());
-//            OrderItem orderItem = new OrderItem();
-//            orderItem.setId("101");
-//            orderItem.setTitle("压测专用");
-//            orderItem.setAmount("101");
-//            orderItem.setPrice("101");
-//
-//            Order order = new Order();
-//            List<OrderItem> orderList = new ArrayList<>();
-//            orderList.add(orderItem);
-//            order.setOrderId(orderId);
-//            order.setItemList(orderList);
-//            order.setTotalPrice("101");
-//
-            orderDao.insertOrder(order);
+
+            order.setCreatedAt(Calendar.getInstance().getTime());
+            if(!orderDao.insertOrder(order)) {
+                scheduledTask.add(order);
+                System.out.println("进入定时任务"+ order.getOrderId());
+            }
         }
         System.out.println("kafka监听器结束");
     }
