@@ -7,6 +7,7 @@ import 'antd-mobile/dist/antd-mobile.css';
 import axios from 'axios';
 import CustomPopover from '../components/CustomPopover';
 import LoginButton from '../components/LoginButton';
+import E from '../global';
 
 let dataBlobs = [];
 
@@ -30,6 +31,7 @@ class Shop extends React.Component {
       page: 1,
       hasMore: true,
     };
+    E.listener.add("refreshShopList", this.refreshShopList);
 
     console.log("shop页面已加载");
   }
@@ -73,7 +75,7 @@ class Shop extends React.Component {
     });
   }
 
-  cancelSearch = () => {
+  refreshShopList = () => {
     this.setState({ isLoading: true, page: 1, hasMore: true });
     this.requestGoodsData(this.state.page).then(data => {
       dataBlobs = data.result;
@@ -135,7 +137,7 @@ class Shop extends React.Component {
             (<LoginButton />)
           }
         >商品列表</NavBar>
-        <Search dataUpdate={this.dataUpdate.bind(this)} cancelSearch={this.cancelSearch.bind(this)} />
+        <Search dataUpdate={this.dataUpdate.bind(this)} cancelSearch={this.refreshShopList.bind(this)} />
         <NoticeBar mode="closable" marqueeProps={{ loop: true, style: { padding: '0 7.5px' } }} onClick={this.closeNoticeBar}>
           <Link to='/rush'>周杰伦上海演唱会门票限时抢购即将开启，赶紧来抢购吧~</Link>
         </NoticeBar>

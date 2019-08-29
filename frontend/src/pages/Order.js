@@ -40,7 +40,12 @@ class Order extends React.Component {
         });
       });
     }
-    
+  }
+
+  componentWillUnmount() {
+    this.setState = (state, callback) => {
+      return;
+    }
   }
 
   requestOrderData = async () => {

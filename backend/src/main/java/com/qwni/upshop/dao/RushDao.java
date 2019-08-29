@@ -62,7 +62,7 @@ public class RushDao {
         FindAndModifyOptions options = new FindAndModifyOptions();
         options.returnNew(true);
         Rush rush = mongoTemplate.findAndModify(query, update, options, Rush.class, "rush");
-        return true;
+        return rush != null;
 
     }
 }

@@ -21,6 +21,12 @@ export class OrderListItem extends Component {
     }
   }
 
+  componentWillUnmount() {
+    this.setState = (state, callback) => {
+      return;
+    }
+  }
+
   dataList = [
     { url: picUrl, title: '云闪付' },
     { url: 'https://gw.alipayobjects.com/zos/rmsportal/OpHiXAcYzmPQHcdlLFrc.png', title: '支付宝' },
@@ -80,7 +86,10 @@ export class OrderListItem extends Component {
     formData.append('orderId', this.props.item.orderId);
     axios.post('http://localhost:8080/order/delete', formData)
       .then((response) => {
-        if(response.data.code === "0") E.listener.call("updateOrderList"); 
+        if(response.data.code === "0") {
+          E.listener.call("updateOrderList"); 
+          E.listener.call("refreshShopList");
+        }
         else console.log("删除订单失败");
       });
   }
