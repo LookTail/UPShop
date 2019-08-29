@@ -53,7 +53,11 @@ public class ScheduledTask {
 
     @Scheduled(cron = "0/1 * * * * ?")
     public void deleteExpiredOrder() {
-        orderDao.deleteExpiredOrder();
+        if(orderDao.deleteExpiredOrder()){
+//            System.out.println("删除过期订单成功");
+        } else {
+            System.out.println("删除过期订单失败");
+        }
     }
 
     public void add(Order order) {

@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
-import { Button, ActionSheet, Toast } from 'antd-mobile'
+import { Button, ActionSheet, Toast, Modal } from 'antd-mobile'
 import picUrl from '../assets/unionpay.png';
 import axios from 'axios'
 import E from '../global';
+
+const alert = Modal.alert;
 
 export class OrderListItem extends Component {
   constructor(props) {
@@ -63,6 +65,25 @@ export class OrderListItem extends Component {
       }  
     });
   }
+
+  cancelClick = () => {
+    
+    alert('删除订单', '确认删除订单？', [
+      { text: '取消', onPress: () => console.log('cancel') },
+      { text: '确认', onPress: this.deleteOrder },
+    ])
+    
+  }
+
+  deleteOrder = () => {
+    let formData = new URLSearchParams();
+    formData.append('orderId', this.props.item.orderId);
+    axios.post('http://localhost:8080/order/delete', formData)
+      .then((response) => {
+        if(response.data.code === "0") E.listener.call("updateOrderList"); 
+        else console.log("删除订单失败");
+      });
+  }
   
   paymentNotify = async (id) => {
     let result;
@@ -101,8 +122,7 @@ export class OrderListItem extends Component {
       E.listener.call("updateOrderList");
       return;
     }
-    setTimeout(this.timeCount, 1000);
-    
+    setTimeout(this.timeCount, 1000);  
   }
 
   render() {
@@ -123,8 +143,21 @@ export class OrderListItem extends Component {
         </div>
         <div style={{ display: 'flex', padding: '15px 0' }}>
           <span style={{ fontSize: '14px', color: '#404040', lineHeight: '30px' }}>总金额：{this.props.item.totalPrice}</span>
-          {this.state.leftMinute > 0 || this.state.leftSecond > 0 ? (<span style={{ fontSize: '14px', color: '#F00000', lineHeight: '30px', marginLeft: '80px'}}>{timeCount}</span>) : null }
-          <div style={{ marginTop: 'auto', marginLeft: 'auto', marginRight: '2px'}}>
+          <div style={{marginLeft: 'auto'}}></div>
+          {this.state.leftMinute > 0 || this.state.leftSecond > 0 ? (
+            <span style={{ fontSize: '14px', color: '#F00000', lineHeight: '30px', marginRight: '10px'}}>{timeCount}</span>
+          ) : null }
+          {this.state.leftMinute > 0 || this.state.leftSecond > 0 ? (   
+            <div style={{ marginTop: 'auto', marginRight: '10px'}}>
+              <Button
+                size="small"
+                type="primary"
+                onClick={this.cancelClick}
+                style={{backgroundColor: '#F00000'}}
+              >取消订单</Button> 
+            </div>
+          ) : null }
+          <div style={{ marginTop: 'auto', marginRight: '2px'}}>
             <Button
               size="small"
               type="primary"

@@ -37,6 +37,13 @@ public class OrderDao {
         return !result.getOrderId().isEmpty();
     }
 
+    public Order getOrder(String orderId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("orderId").is(orderId));
+        List<Order> list = mongoTemplate.find(query, Order.class, "order");
+        return list.size() > 0 ? list.get(0) : null;
+    }
+
     public Boolean deleteAllOrder() {
         Query query= new Query(new Criteria());
         DeleteResult deleteResult = mongoTemplate.remove(query, "order");

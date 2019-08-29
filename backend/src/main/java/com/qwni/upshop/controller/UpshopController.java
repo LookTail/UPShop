@@ -129,10 +129,23 @@ public class UpshopController {
         return resp;
     }
 
-    @RequestMapping(value = "order/delete", method = RequestMethod.GET)
-    public BaseResp deleteOrder() {
+    @RequestMapping(value = "order/deleteAll", method = RequestMethod.GET)
+    public BaseResp deleteAllOrder() {
         BaseResp resp = new BaseResp();
         if(orderService.deleteAllOrder()) {
+            resp.setCode(RespCodeEnum.SUCCESS.getCode());
+            resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
+        } else {
+            resp.setCode((RespCodeEnum.FAIL.getCode()));
+            resp.setMsg(RespCodeEnum.FAIL.getMsg());
+        }
+        return resp;
+    }
+
+    @RequestMapping(value = "order/delete", method = RequestMethod.POST)
+    public BaseResp deleteOrder(@RequestParam(value = "orderId") String orderId) {
+        BaseResp resp = new BaseResp();
+        if(orderService.deleteOrder(orderId)) {
             resp.setCode(RespCodeEnum.SUCCESS.getCode());
             resp.setMsg(RespCodeEnum.SUCCESS.getMsg());
         } else {

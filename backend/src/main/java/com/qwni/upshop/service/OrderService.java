@@ -89,6 +89,15 @@ public class OrderService {
         return orderDao.deleteAllOrder();
     }
 
+    public Boolean deleteOrder(String orderId) {
+        Order order = orderDao.getOrder(orderId);
+        if(order != null) {
+            return goodsDao.recoverSales(order) && orderDao.deleteOrder(orderId);
+        } else {
+             return false;
+        }
+    }
+
     public Boolean paymentNotify(String orderId) {
 //        if(orderDao.hasOrder(orderId)) {
 //            if(orderDao.changePaymentStatus(orderId)) {
